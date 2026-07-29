@@ -106,21 +106,25 @@ const homePaths = [
 const contactTopics = [
   {
     label: "Networking",
+    description: "Consulting, finance and shared interests.",
     subject: "Networking conversation",
     body: "Hi Francisco, I would like to connect and talk about consulting, finance and your current path.",
   },
   {
     label: "Recruiting / CV",
+    description: "Profile fit, roles and next steps.",
     subject: "Profile and CV conversation",
     body: "Hi Francisco, I reviewed your portfolio and would like to discuss your profile and CV.",
   },
   {
     label: "Valuation",
+    description: "Cash flow, scenarios and enterprise value.",
     subject: "Valuation and finance conversation",
     body: "Hi Francisco, I would like to talk about valuation, cash flow analysis and finance topics.",
   },
   {
     label: "Coffee chat",
+    description: "A focused, informal introduction.",
     subject: "Coffee chat",
     body: "Hi Francisco, I would like to schedule a quick coffee chat.",
   },
@@ -513,7 +517,7 @@ function WorkView({ handleOpenLink }) {
       </m.section>
 
       <m.section className="content-grid capability-grid" variants={sectionVariants}>
-        {experienceCards.slice(0, 3).map((card, index) => (
+        {experienceCards.map((card, index) => (
           <CapabilityCard
             key={card.title}
             card={card}
@@ -562,22 +566,39 @@ function CapabilityCard({ card, index }) {
           setExpanded((current) => !current);
         }}
       >
-        {expanded ? "Show less" : "Show more"}
+        {expanded ? "Show less" : card.architecture ? "View architecture" : "Show more"}
       </button>
 
       <AnimatePresence initial={false}>
         {expanded ? (
-          <m.ul
-            className="capability-details"
+          <m.div
+            className="capability-expanded"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.34, ease: premiumEase }}
           >
-            {card.details.map((detail) => (
-              <li key={detail}>{detail}</li>
-            ))}
-          </m.ul>
+            <ul className="capability-details">
+              {card.details.map((detail) => (
+                <li key={detail}>{detail}</li>
+              ))}
+            </ul>
+
+            {card.architecture ? (
+              <div className="capability-architecture" aria-label="SAP Group Reporting architecture">
+                <p className="eyebrow">ARCHITECTURE VIEW</p>
+                <div className="architecture-flow">
+                  {card.architecture.map((layer, layerIndex) => (
+                    <div className="architecture-layer" key={layer.layer}>
+                      <span>{String(layerIndex + 1).padStart(2, "0")} | {layer.layer}</span>
+                      <strong>{layer.title}</strong>
+                      <small>{layer.detail}</small>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </m.div>
         ) : null}
       </AnimatePresence>
     </m.article>
@@ -585,50 +606,111 @@ function CapabilityCard({ card, index }) {
 }
 
 function ContactView({ handleMailClick, handleOpenLink, handleDownloadCV, isDownloadingCV }) {
+  const [activeTopicIndex, setActiveTopicIndex] = useState(0);
+  const activeTopic = contactTopics[activeTopicIndex];
+
+  const handleTopicSelect = (index) => {
+    if (index !== activeTopicIndex) {
+      playSound(selectSound);
+      setActiveTopicIndex(index);
+    }
+  };
+
   return (
     <>
-      <m.section className="content-grid" variants={sectionVariants}>
-        <m.article
-          className="card contact-main span-7 section-tone-warm"
-          data-reveal="up"
-          variants={cardVariants}
-          whileHover={premiumHover}
-        >
-          <p className="eyebrow">CONTACT</p>
-          <h2>Start with a useful subject.</h2>
-          <p>
-            Pick a topic and the email opens with a clear subject and body. Less friction, better conversation.
-          </p>
+      <m.section className="content-grid contact-overview-grid" variants={sectionVariants}>
+        <m.div className="contact-primary-stack span-7" variants={cardVariants}>
+          <m.article
+            className="card contact-main section-tone-warm"
+            data-reveal="up"
+            variants={cardVariants}
+          >
+            <div className="contact-main-header">
+              <div>
+                <p className="eyebrow">CONTACT</p>
+                <h2>Start with a useful subject.</h2>
+                <p>
+                  Choose a direction, review the draft and open a focused email in one step.
+                </p>
+              </div>
+              <span className="contact-availability-pill">Open to thoughtful conversations</span>
+            </div>
 
-          <div className="topic-grid">
-            {contactTopics.map((topic) => (
-              <button
-                key={topic.label}
-                type="button"
-                className="topic-button"
-                onClick={() => handleMailClick(topic)}
-                onMouseEnter={() => playSound(hoverSound)}
-              >
-                {topic.label}
-              </button>
-            ))}
-          </div>
-        </m.article>
+            <div className="contact-composer">
+              <div className="topic-grid" aria-label="Conversation topics">
+                {contactTopics.map((topic, index) => (
+                  <button
+                    key={topic.label}
+                    type="button"
+                    className={`topic-button ${index === activeTopicIndex ? "active" : ""}`}
+                    aria-pressed={index === activeTopicIndex}
+                    onClick={() => handleTopicSelect(index)}
+                    onMouseEnter={() => playSound(hoverSound)}
+                  >
+                    <span className="topic-index">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="topic-copy">
+                      <strong>{topic.label}</strong>
+                      <span>{topic.description}</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="contact-draft-shell">
+                <AnimatePresence mode="wait" initial={false}>
+                  <m.div
+                    key={activeTopic.label}
+                    className="contact-draft-preview"
+                    initial={{ opacity: 0, x: 14, filter: "blur(6px)" }}
+                    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, x: -10, filter: "blur(4px)" }}
+                    transition={{ duration: 0.32, ease: premiumEase }}
+                  >
+                    <div className="contact-draft-topline">
+                      <span>READY-TO-SEND DRAFT</span>
+                      <span>EMAIL</span>
+                    </div>
+
+                    <div className="contact-draft-address">
+                      <span>TO</span>
+                      <strong>{profile.email}</strong>
+                    </div>
+
+                    <div className="contact-draft-copy">
+                      <span>SUBJECT</span>
+                      <h3>{activeTopic.subject}</h3>
+                      <p>{activeTopic.body}</p>
+                    </div>
+
+                    <div className="contact-draft-footer">
+                      <button
+                        type="button"
+                        className="contact-compose-button"
+                        onClick={() => handleMailClick(activeTopic)}
+                      >
+                        Compose email
+                      </button>
+                      <span>Opens in your mail app</span>
+                    </div>
+                  </m.div>
+                </AnimatePresence>
+              </div>
+            </div>
+          </m.article>
+
+          <m.div className="contact-message-shell" data-reveal="up" variants={cardVariants}>
+            <MessageCard
+              name="Francisco"
+              prompt="nice to meet you. what did you want to talk about?"
+              reply="Happy to talk about consulting, valuation, finance and where I'm headed next."
+              onEmail={() => handleMailClick(contactTopics[0])}
+              avatar="/images/fran-photo-3.jpeg"
+            />
+          </m.div>
+        </m.div>
 
         <m.div className="contact-side span-5" variants={cardVariants}>
           <CalendarCard {...calendarCard} />
-        </m.div>
-      </m.section>
-
-      <m.section className="content-grid" variants={sectionVariants}>
-        <m.div className="span-12" variants={cardVariants}>
-          <MessageCard
-            name="Francisco"
-            prompt="nice to meet you. what did you want to talk about?"
-            reply="Happy to talk about consulting, valuation, finance and where I'm headed next."
-            onEmail={() => handleMailClick(contactTopics[0])}
-            avatar="/images/fran-photo-3.jpeg"
-          />
         </m.div>
       </m.section>
 

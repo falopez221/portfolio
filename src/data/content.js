@@ -307,6 +307,54 @@ export const experienceCards = [
     ],
   },
   {
+    eyebrow: "SAP PROCESS ANALYSIS",
+    title: "Analisis de procesos en SAP",
+    subtitle: "From process diagrams to improvement opportunities",
+    description:
+      "Lectura de diagramas end-to-end en SAP para entender flujos, responsables, puntos de control, integraciones y oportunidades de mejora.",
+    tags: ["Process Diagrams", "SAP", "Controls"],
+    details: [
+      "Mapear procesos end-to-end y su vinculo con modulos, roles e interfaces.",
+      "Identificar handoffs, controles, excepciones y riesgos operativos.",
+      "Traducir el mapa AS-IS en hipotesis de mejora y un diseno TO-BE.",
+    ],
+  },
+  {
+    eyebrow: "SAP FINANCIAL CONSOLIDATION",
+    title: "SAP Group Reporting",
+    subtitle: "Financial consolidation with an architecture lens",
+    description:
+      "Comprension de la consolidacion financiera en SAP, desde las fuentes y estructuras de grupo hasta validaciones, eliminaciones y reporting consolidado.",
+    tags: ["Group Reporting", "Consolidation", "Architecture"],
+    details: [
+      "Relacionar unidades de consolidacion, financial statement items y jerarquias de grupo.",
+      "Seguir el flujo de datos entre el Universal Journal y el Universal Consolidation Journal.",
+      "Entender como Data Monitor y Consolidation Monitor ordenan tareas, controles y cierre.",
+    ],
+    architecture: [
+      {
+        layer: "SOURCE",
+        title: "S/4HANA Finance",
+        detail: "ACDOCA and external reporting data",
+      },
+      {
+        layer: "JOURNAL",
+        title: "Group Reporting",
+        detail: "ACDOCU, units and FS items",
+      },
+      {
+        layer: "ORCHESTRATION",
+        title: "Monitor layer",
+        detail: "Data Monitor and Consolidation Monitor",
+      },
+      {
+        layer: "OUTPUT",
+        title: "Consolidated view",
+        detail: "Validation, translation and eliminations",
+      },
+    ],
+  },
+  {
     eyebrow: "DIGITAL FINANCE",
     title: "Blockchain and DeFi",
     subtitle: "Professional curiosity with business framing",
