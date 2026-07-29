@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import { m } from "framer-motion";
-import { hoverSound, playSound, selectSound, tapSound } from "../utils/sounds";
+import { hoverSound, playSound, tapSound } from "../utils/sounds";
 
 const premiumEase = [0.22, 1, 0.36, 1];
 
@@ -40,11 +40,6 @@ function PhotoCard({
   const pointerRef = useRef({ x: 0.5, y: 0.5 });
 
   if (!activeSlide) return null;
-
-  const handleSelect = (index) => {
-    playSound(selectSound);
-    setActiveIndex(index);
-  };
 
   const handlePointerEnter = (event) => {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
@@ -108,12 +103,17 @@ function PhotoCard({
       onPointerLeave={handlePointerLeave}
     >
       <div className="photo-media-wrap">
-        <img
+        <m.img
+          key={activeSlide.image}
           src={activeSlide.image}
           alt={activeSlide.title || "Portfolio visual"}
           className="photo-card-image"
           loading="lazy"
           decoding="async"
+          style={{ objectPosition: activeSlide.objectPosition || "50% 50%" }}
+          initial={{ opacity: 0.5, scale: 1.035 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: premiumEase }}
         />
         <div className="photo-overlay" />
       </div>
@@ -128,27 +128,6 @@ function PhotoCard({
         </div>
 
         <div className="photo-footer">
-          <div className="photo-thumbnails" aria-label="Photo gallery preview">
-            {preparedSlides.map((slide, index) => (
-              <button
-                key={`${slide.image}-${index}`}
-                type="button"
-                className={`photo-thumb-button ${index === activeIndex ? "active" : ""}`}
-                onClick={() => handleSelect(index)}
-                onMouseEnter={() => playSound(hoverSound)}
-                aria-label={`Show photo ${index + 1}`}
-              >
-                <img
-                  src={slide.image}
-                  alt={`Preview ${index + 1}`}
-                  className="photo-thumb"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </button>
-            ))}
-          </div>
-
           <div className="photo-meta">
             <span>{activeSlide.meta || meta}</span>
           </div>
@@ -166,6 +145,7 @@ function PhotoCard({
               setActiveIndex(index);
             }}
             onMouseEnter={() => playSound(hoverSound)}
+            aria-label={`Show photo ${index + 1}`}
           >
             {slide.label || String(index + 1).padStart(2, "0")}
           </button>

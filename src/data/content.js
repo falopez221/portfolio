@@ -13,6 +13,7 @@ export const profile = {
   location: "Buenos Aires, Argentina",
   email: "franciscoariellopez22@gmail.com",
   linkedin: "https://linkedin.com/in/francisco-ariel-lopez",
+  venture: "https://venturegovernance.com/",
   availability: "Open to networking conversations and selected opportunities.",
   calendly: "mailto:franciscoariellopez22@gmail.com",
 };
@@ -273,6 +274,11 @@ export const experienceCards = [
     description:
       "Analisis, research y recomendaciones estructuradas en finanzas y estrategia, con foco en claridad, rigor y materiales listos para conversacion ejecutiva.",
     tags: ["Strategy", "Finance", "Enterprise Value"],
+    details: [
+      "Structure ambiguous business questions into decision paths.",
+      "Translate analysis into concise, executive-ready materials.",
+      "Connect finance, strategy and enterprise-value drivers.",
+    ],
   },
   {
     eyebrow: "VALUATION AND CASH FLOW",
@@ -281,6 +287,11 @@ export const experienceCards = [
     description:
       "Armado y analisis de flujo de fondos, metodologias de valuacion y lectura de variables macroeconomicas para construir una mirada financiera clara.",
     tags: ["Valuation", "Cash Flow", "Macroeconomics"],
+    details: [
+      "Build and review cash-flow logic from operating assumptions.",
+      "Compare valuation views rather than relying on one answer.",
+      "Stress-test the variables that move enterprise value.",
+    ],
   },
   {
     eyebrow: "STRATEGY AND RISK",
@@ -289,6 +300,11 @@ export const experienceCards = [
     description:
       "Analisis de costos, evaluacion de riesgos financieros y toma de decisiones criticas apoyadas en escenarios reales y pensamiento estructurado.",
     tags: ["Risk Analysis", "Scenarios", "Decision Making"],
+    details: [
+      "Map cost and risk drivers to practical decision consequences.",
+      "Use scenarios to expose trade-offs and downside conditions.",
+      "Keep assumptions, owners and next actions visible.",
+    ],
   },
   {
     eyebrow: "DIGITAL FINANCE",
@@ -297,6 +313,11 @@ export const experienceCards = [
     description:
       "Interes sostenido en blockchain, DeFi y nuevos modelos de infraestructura financiera desde una mirada de negocio, riesgo y adopcion.",
     tags: ["Blockchain", "DeFi", "Digital Finance"],
+    details: [
+      "Examine incentives, liquidity and governance through a business lens.",
+      "Connect protocol mechanics to adoption and institutional risk.",
+      "Use DeFi as one input to broader governed decision systems.",
+    ],
   },
 ];
 
@@ -306,56 +327,31 @@ export const photoCards = [
     slides: [
       {
         image: "/images/fran-photo-1.jpeg",
-        title: "Perspective matters as much as precision.",
-        caption: "A more personal layer to the portfolio: selective, calm and still aligned with an executive profile.",
-        meta: "Patagonia | perspective and clarity",
+        objectPosition: "50% 58%",
+        title: "Perspective sharpens judgment.",
+        caption: "Time outside the screen creates distance, focus and a clearer return to complex work.",
+        meta: "Patagonia | perspective",
       },
       {
         image: "/images/fran-photo-4.jpeg",
-        title: "Ambition with city rhythm.",
-        caption: "Energy, movement and a digital-business pace without losing professional tone.",
-        meta: "Buenos Aires | after-hours energy",
+        objectPosition: "50% 44%",
+        title: "Energy beyond the desk.",
+        caption: "A personal frame for the pace, curiosity and movement behind the professional profile.",
+        meta: "Buenos Aires | city rhythm",
       },
       {
         image: "/images/fran-photo-3.jpeg",
-        title: "Clean profile, executive direction.",
-        caption: "A more formal visual frame for the consulting side of the portfolio.",
-        meta: "Portrait | polished profile",
+        objectPosition: "50% 34%",
+        title: "Clear profile, direct signal.",
+        caption: "A quieter portrait treatment that keeps the focus on the person, not the interface.",
+        meta: "Portrait | direct",
       },
       {
         image: "/images/fran-photo-2.jpeg",
-        title: "Professional presence, clearer signal.",
-        caption: "Executive aesthetic, minimal presentation and stronger recruiter-read positioning.",
-        meta: "Formal portrait | consulting presence",
-      },
-    ],
-  },
-  {
-    badge: "EXECUTIVE CUT",
-    slides: [
-      {
-        image: "/images/fran-photo-2.jpeg",
-        title: "Executive presence, without overdesign.",
-        caption: "The visual identity should feel premium, personal and ready for recruiter review.",
-        meta: "Formal portrait | consulting ready",
-      },
-      {
-        image: "/images/fran-photo-3.jpeg",
-        title: "Professional, direct and more personal.",
-        caption: "A cleaner portrait treatment for the contact-facing side of the portfolio.",
-        meta: "Headshot | contact-facing",
-      },
-      {
-        image: "/images/fran-photo-4.jpeg",
-        title: "Business energy beyond the desk.",
-        caption: "A portfolio can show ambition and movement without becoming too casual.",
-        meta: "City lights | digital-business tone",
-      },
-      {
-        image: "/images/fran-photo-1.jpeg",
-        title: "Distance helps sharpen judgment.",
-        caption: "Perspective, focus and calm execution still matter behind every spreadsheet and slide.",
-        meta: "Outdoor frame | clarity and focus",
+        objectPosition: "50% 30%",
+        title: "Professional presence, without overdesign.",
+        caption: "A formal frame for consulting conversations, recruiter review and direct contact.",
+        meta: "Formal portrait | consulting",
       },
     ],
   },
@@ -413,7 +409,7 @@ export const currentPodcast = {
   title: "Current Podcast",
   episode: "Secrets of a Tech-Savvy CFO",
   subtitle: "Insights on finance leadership, technology and enterprise value.",
-  metadata: "27 min • CFO Weekly",
+  metadata: "27 min | CFO Weekly",
   href:
     "https://podcasts.apple.com/us/podcast/greatest-hits-secrets-of-a-tech-savvy-cfo-with-aaron-levine/id1511978445?i=1000754437381",
   takeaways: [

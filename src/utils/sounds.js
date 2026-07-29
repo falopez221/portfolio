@@ -14,20 +14,23 @@ export const swoshSound = createSound("/audio/swosh.mp3", 0.16);
 const lastPlayedAt = new WeakMap();
 
 export function playSound(sound) {
-  if (!sound) return;
+  if (!sound) return Promise.resolve(false);
 
   try {
     const now = performance.now();
     const minimumGap = sound === hoverSound ? 180 : 90;
     const previous = lastPlayedAt.get(sound) || 0;
 
-    if (now - previous < minimumGap) return;
+    if (now - previous < minimumGap) return Promise.resolve(false);
     lastPlayedAt.set(sound, now);
 
     sound.pause();
     sound.currentTime = 0;
-    sound.play().catch(() => {});
+    const playback = sound.play();
+    if (!playback?.then) return Promise.resolve(true);
+    return playback.then(() => true).catch(() => false);
   } catch {
     // Ignore browsers blocking autoplay for UI sounds.
+    return Promise.resolve(false);
   }
 }

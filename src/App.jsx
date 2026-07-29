@@ -9,29 +9,26 @@ import {
   toggleSound,
 } from "./utils/sounds";
 import {
-  audioIntro,
   calendarCard,
   contactCards,
-  currentPodcast,
   experienceCards,
-  photoCards,
   profile,
   quickFacts,
-  spotlightCards,
   workflowApps,
 } from "./data/content.js";
-import PhotoCard from "./components/PhotoCard.jsx";
 import CalendarCard from "./components/CalendarCard.jsx";
-import AudioCard from "./components/AudioCard.jsx";
 import AppleCursorGlow from "./components/AppleCursorGlow.jsx";
 import WorkflowShowcase from "./components/WorkflowShowcase.jsx";
 import MessageCard from "./components/MessageCard.jsx";
-import PodcastCard from "./components/PodcastCard.jsx";
+import VentureExperience from "./components/VentureExperience.jsx";
+import LifeExperience from "./components/LifeExperience.jsx";
 
 const navItems = [
   { label: "Home", id: "home" },
   { label: "About", id: "about" },
   { label: "Work", id: "work" },
+  { label: "Venture", id: "venture" },
+  { label: "Life", id: "life" },
   { label: "Contact", id: "contact" },
 ];
 
@@ -84,24 +81,27 @@ const premiumHover = {
   transition: { duration: 0.22, ease: premiumEase },
 };
 
-const cockpitCards = [
+const homePaths = [
   {
-    title: "Valuation",
-    label: "Cash flow logic",
-    text: "Flujo de fondos, valuation views and sensitivity thinking.",
-    tone: "valuation",
+    id: "work",
+    title: "Executive toolkit",
+    label: "WORK",
+    text: "Valuation, scenarios, research and decision-ready output.",
+    tone: "work",
   },
   {
-    title: "Risk",
-    label: "Scenario lens",
-    text: "Costs, financial risk and critical decisions under real constraints.",
-    tone: "risk",
+    id: "venture",
+    title: "Governed intelligence",
+    label: "VENTURE",
+    text: "Three interactive 3D views connecting finance, agents and human authority.",
+    tone: "venture",
   },
   {
-    title: "Digital Finance",
-    label: "Blockchain / DeFi",
-    text: "A business view on new financial infrastructure and adoption.",
-    tone: "defi",
+    id: "life",
+    title: "Movement and sound",
+    label: "LIFE",
+    text: "Sport, music and personal context with the same deliberate design.",
+    tone: "life",
   },
 ];
 
@@ -163,7 +163,11 @@ const aboutTimeline = [
   { year: "2023", label: "Foundation", text: "Finance, analysis and business fundamentals." },
   { year: "2024", label: "Accenture", text: "Consulting standards, structure and client-ready output." },
   { year: "2025", label: "CFO & EV", text: "Valuation, enterprise value and strategic finance lens." },
-  { year: "2026", label: "Growth", text: "Sharper judgment, digital finance and executive presence." },
+  {
+    year: "2026",
+    label: "Venture Governance",
+    text: "Building governed, agentic decision systems with human authority.",
+  },
 ];
 
 function App() {
@@ -212,10 +216,14 @@ function App() {
 
   useEffect(() => {
     let hasPlayedIntroSound = false;
-    const playIntroSound = () => {
-      if (hasPlayedIntroSound) return;
-      hasPlayedIntroSound = true;
-      playSound(swoshSound);
+    let isTryingIntroSound = false;
+
+    const playIntroSound = async () => {
+      if (hasPlayedIntroSound || isTryingIntroSound) return;
+      isTryingIntroSound = true;
+      const didPlay = await playSound(swoshSound);
+      hasPlayedIntroSound = didPlay;
+      isTryingIntroSound = false;
     };
     const soundTimer = window.setTimeout(playIntroSound, 420);
     const firstInteraction = () => playIntroSound();
@@ -365,8 +373,6 @@ function App() {
                   handleDownloadCV={handleDownloadCV}
                   isDownloadingCV={isDownloadingCV}
                   handleNavigate={handleNavigate}
-                  handleMailClick={handleMailClick}
-                  handleOpenLink={handleOpenLink}
                 />
               ) : null}
 
@@ -374,6 +380,14 @@ function App() {
 
               {activeSection === "work" ? (
                 <WorkView handleOpenLink={handleOpenLink} />
+              ) : null}
+
+              {activeSection === "venture" ? (
+                <VentureExperience onOpenLink={handleOpenLink} />
+              ) : null}
+
+              {activeSection === "life" ? (
+                <LifeExperience onOpenLink={handleOpenLink} />
               ) : null}
 
               {activeSection === "contact" ? (
@@ -413,8 +427,6 @@ function IntroOverlay() {
 function HomeView({
   handleDownloadCV,
   handleNavigate,
-  handleMailClick,
-  handleOpenLink,
   isDownloadingCV,
 }) {
   const handleHeroPointerMove = (event) => {
@@ -452,20 +464,21 @@ function HomeView({
           onPointerLeave={handleHeroPointerLeave}
         >
           <div className="home-cockpit-main">
-            <p className="eyebrow">FRANCISCO | CFO & ENTERPRISE VALUE</p>
+            <p className="eyebrow">FRANCISCO | STRATEGY, FINANCE & VENTURE GOVERNANCE</p>
             <h1>Francisco</h1>
             <p className="cockpit-subtitle">
-              Strategy & Consulting Intern building a finance-driven consulting foundation at Accenture.
+              Strategy & Consulting Intern in CFO & Enterprise Value at Accenture, building
+              governed systems for clearer, more inspectable decisions.
             </p>
             <div className="cockpit-actions">
-              <button type="button" className="primary-button" onClick={() => handleNavigate("work")}>
+              <button type="button" className="primary-button" onClick={() => handleNavigate("venture")}>
+                Explore Venture
+              </button>
+              <button type="button" className="secondary-button" onClick={() => handleNavigate("work")}>
                 View work
               </button>
               <button type="button" className="secondary-button" onClick={handleDownloadCV}>
-                Download CV
-              </button>
-              <button type="button" className="secondary-button" onClick={() => handleMailClick()}>
-                Email
+                {isDownloadingCV ? "Preparing..." : "Download CV"}
               </button>
             </div>
           </div>
@@ -479,10 +492,11 @@ function HomeView({
               <span className="cockpit-signal signal-three">CFO</span>
             </div>
             <div className="cockpit-profile-copy">
-              <span className="profile-status">Consulting ready</span>
-              <h2>{profile.title}</h2>
+              <span className="profile-status">Consulting + founder</span>
+              <h2>Finance, strategy and governed intelligence.</h2>
               <div className="profile-meta">
-                <span>{profile.team}</span>
+                <span>Accenture | {profile.team}</span>
+                <span>Venture Governance System</span>
                 <span>{profile.location}</span>
               </div>
             </div>
@@ -490,54 +504,25 @@ function HomeView({
         </section>
       </m.div>
 
-      <m.section className="content-grid cockpit-grid" variants={sectionVariants}>
-        {cockpitCards.map((card) => (
-          <m.article
-            key={card.title}
-            className={`card cockpit-card cockpit-${card.tone} interactive-card span-4`}
+      <m.section className="content-grid home-path-grid" variants={sectionVariants}>
+        {homePaths.map((card, index) => (
+          <m.button
+            key={card.id}
+            type="button"
+            className={`card home-path-card home-path-${card.tone} interactive-card span-4`}
             data-reveal="up"
             variants={cardVariants}
             whileHover={premiumHover}
+            whileTap={{ scale: 0.985 }}
+            onClick={() => handleNavigate(card.id)}
             onMouseEnter={() => playSound(hoverSound)}
           >
-            <span>{card.label}</span>
-            <h3>{card.title}</h3>
+            <span className="home-path-index">{String(index + 1).padStart(2, "0")}</span>
+            <p className="eyebrow">{card.label}</p>
+            <h2>{card.title}</h2>
             <p>{card.text}</p>
-          </m.article>
-        ))}
-      </m.section>
-
-      <m.section className="content-grid visual-band" variants={sectionVariants}>
-        <m.div className="span-8" variants={cardVariants}>
-          <WorkflowShowcase apps={workflowApps} />
-        </m.div>
-        <m.div className="span-4" variants={cardVariants}>
-          <CalendarCard {...calendarCard} />
-        </m.div>
-      </m.section>
-
-      <m.section className="content-grid lifestyle-band" variants={sectionVariants}>
-        <m.div className="span-12" variants={cardVariants}>
-          <PhotoCard {...photoCards[0]} depth={0.14} />
-        </m.div>
-      </m.section>
-
-      <m.section className="content-grid home-bottom-grid" variants={sectionVariants}>
-        <m.div className="span-4" variants={cardVariants}>
-          <AudioCard {...audioIntro} />
-        </m.div>
-        <m.div className="span-4" variants={cardVariants}>
-          <PodcastCard podcast={currentPodcast} onOpenLink={handleOpenLink} />
-        </m.div>
-        {contactCards.map((card) => (
-          <ContactActionCard
-            key={card.title}
-            card={card}
-            onEmail={handleMailClick}
-            onOpenLink={handleOpenLink}
-            onDownloadCV={handleDownloadCV}
-            isDownloadingCV={isDownloadingCV}
-          />
+            <strong>Open view</strong>
+          </m.button>
         ))}
       </m.section>
     </>
@@ -571,6 +556,13 @@ function AboutView() {
         </m.article>
 
         <m.div className="about-depth-panel" data-reveal="up" aria-hidden="true" variants={cardVariants}>
+          <img
+            src="/images/fran-photo-3.jpeg"
+            alt=""
+            className="about-profile-photo"
+            loading="lazy"
+            decoding="async"
+          />
           <span className="about-depth-orbit orbit-one" />
           <span className="about-depth-orbit orbit-two" />
           <div className="about-depth-card">
@@ -639,31 +631,6 @@ function AboutView() {
           ))}
         </div>
       </m.section>
-
-      <m.section
-        className="content-grid about-page-grid secondary"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-12% 0px" }}
-      >
-        <div className="about-mosaic span-12">
-          {spotlightCards.map((card, index) => (
-            <m.article
-              key={card.title}
-              className={`card spotlight-card interactive-card spotlight-${card.accent}`}
-              data-reveal="up"
-              variants={cardVariants}
-              whileHover={premiumHover}
-              onMouseEnter={() => playSound(hoverSound)}
-            >
-              <span className="spotlight-stat">{card.stat || String(index + 1).padStart(2, "0")}</span>
-              <h3>{card.title}</h3>
-              <p>{card.text}</p>
-            </m.article>
-          ))}
-        </div>
-      </m.section>
     </>
   );
 }
@@ -698,35 +665,74 @@ function WorkView({ handleOpenLink }) {
       </m.section>
 
       <m.section className="content-grid capability-grid" variants={sectionVariants}>
-        {experienceCards.map((card, index) => (
-          <m.article
+        {experienceCards.slice(0, 3).map((card, index) => (
+          <CapabilityCard
             key={card.title}
-            className={`card capability-card capability-${index + 1} interactive-card ${
-              index === 0 ? "span-6" : "span-6"
-            }`}
-            data-reveal="up"
-            variants={cardVariants}
-            whileHover={premiumHover}
-            onMouseEnter={() => playSound(hoverSound)}
-          >
-            <div className="card-topline">
-              <p className="eyebrow">{card.eyebrow}</p>
-              <span className="arrow-mark sound-trigger">&gt;</span>
-            </div>
-            <h3>{card.title}</h3>
-            <p className="experience-subtitle">{card.subtitle}</p>
-            <p>{card.description}</p>
-            <div className="tag-row">
-              {card.tags.map((tag) => (
-                <span key={tag} className="tag">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </m.article>
+            card={card}
+            index={index}
+          />
         ))}
       </m.section>
     </>
+  );
+}
+
+function CapabilityCard({ card, index }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <m.article
+      className={`card capability-card capability-${index + 1} interactive-card span-4 ${
+        expanded ? "is-expanded" : ""
+      }`}
+      data-reveal="up"
+      variants={cardVariants}
+      whileHover={premiumHover}
+      onMouseEnter={() => playSound(hoverSound)}
+    >
+      <div className="card-topline">
+        <p className="eyebrow">{card.eyebrow}</p>
+        <span className="capability-index">{String(index + 1).padStart(2, "0")}</span>
+      </div>
+      <h3>{card.title}</h3>
+      <p className="experience-subtitle">{card.subtitle}</p>
+      <p>{card.description}</p>
+      <div className="tag-row">
+        {card.tags.map((tag) => (
+          <span key={tag} className="tag">
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        className="capability-toggle"
+        aria-expanded={expanded}
+        onClick={() => {
+          playSound(tapSound);
+          setExpanded((current) => !current);
+        }}
+      >
+        {expanded ? "Show less" : "Show more"}
+      </button>
+
+      <AnimatePresence initial={false}>
+        {expanded ? (
+          <m.ul
+            className="capability-details"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.34, ease: premiumEase }}
+          >
+            {card.details.map((detail) => (
+              <li key={detail}>{detail}</li>
+            ))}
+          </m.ul>
+        ) : null}
+      </AnimatePresence>
+    </m.article>
   );
 }
 
@@ -767,7 +773,7 @@ function ContactView({ handleMailClick, handleOpenLink, handleDownloadCV, isDown
       </m.section>
 
       <m.section className="content-grid" variants={sectionVariants}>
-        <m.div className="span-7" variants={cardVariants}>
+        <m.div className="span-12" variants={cardVariants}>
           <MessageCard
             name="Francisco"
             prompt="nice to meet you. what did you want to talk about?"
@@ -776,25 +782,6 @@ function ContactView({ handleMailClick, handleOpenLink, handleDownloadCV, isDown
             avatar="/images/fran-photo-3.jpeg"
           />
         </m.div>
-
-        <m.article
-          className="card cv-preview-card interactive-card span-5"
-          data-reveal="up"
-          variants={cardVariants}
-          whileHover={premiumHover}
-        >
-          <p className="eyebrow">PDF READY</p>
-          <h3>Francisco Ariel Lopez</h3>
-          <p>Strategy & Consulting | CFO & Enterprise Value | Accenture</p>
-          <div className="cv-preview-lines" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
-          <button type="button" className="primary-button" onClick={handleDownloadCV}>
-            Download CV
-          </button>
-        </m.article>
       </m.section>
 
       <m.section className="content-grid" variants={sectionVariants}>
@@ -825,7 +812,6 @@ function ContactActionCard({ card, onEmail, onOpenLink, onDownloadCV, isDownload
       return;
     }
 
-    playSound(tapSound);
     onOpenLink(card.href);
   };
 
@@ -862,16 +848,10 @@ function ContactActionCard({ card, onEmail, onOpenLink, onDownloadCV, isDownload
 }
 
 function FloatingNav({ activeId, onNavigate, theme, onToggleTheme, isScrolled }) {
-  const activeIndex = Math.max(0, navItems.findIndex((item) => item.id === activeId));
-
   return (
     <header className={`floating-nav-wrap ${isScrolled ? "is-scrolled" : ""}`}>
       <div className="floating-controls">
-        <nav
-          className="floating-nav"
-          aria-label="Principal"
-          style={{ "--nav-index": activeIndex }}
-        >
+        <nav className="floating-nav" aria-label="Principal">
           {navItems.map((item) => (
             <button
               key={item.id}
@@ -880,7 +860,14 @@ function FloatingNav({ activeId, onNavigate, theme, onToggleTheme, isScrolled })
               onClick={() => onNavigate(item.id)}
               onMouseEnter={() => playSound(hoverSound)}
             >
-              {item.label}
+              {activeId === item.id ? (
+                <m.span
+                  className="nav-active-pill"
+                  layoutId="nav-active-pill"
+                  transition={{ duration: 0.38, ease: premiumEase }}
+                />
+              ) : null}
+              <span className="nav-button-label">{item.label}</span>
             </button>
           ))}
         </nav>
@@ -906,6 +893,8 @@ function ViewHeader({ activeSection }) {
     home: "Executive cockpit",
     about: "Profile, mindset and value lens",
     work: "Capability room",
+    venture: "Governed intelligence, DeFi and agentic systems",
+    life: "Sport, music and personal context",
     contact: "Availability, connection and next steps",
   };
 
