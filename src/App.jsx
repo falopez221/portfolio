@@ -259,8 +259,8 @@ function App() {
 
     window.setTimeout(() => {
       const link = document.createElement("a");
-      link.href = "/cv/Fran-CV.pdf";
-      link.download = "Fran-CV.pdf";
+      link.href = "/cv/Francisco_Ariel_Lopez_CV.pdf";
+      link.download = "Francisco_Ariel_Lopez_CV.pdf";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

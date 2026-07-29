@@ -476,7 +476,7 @@ export const contactCards = [
     title: "CV",
     eyebrow: "PDF",
     text: "Download the current profile snapshot for a quick recruiter read.",
-    href: "/cv/Fran-CV.pdf",
+    href: "/cv/Francisco_Ariel_Lopez_CV.pdf",
     label: "Download CV",
     type: "cv",
     metric: "CV",
