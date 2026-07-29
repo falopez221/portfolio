@@ -3598,55 +3598,6 @@ img {
   }
 }
 
-/* Keep every workflow mode in front of its card background. */
-.workflow-card {
-  isolation: isolate;
-}
-
-.workflow-stage,
-.workflow-dock,
-.workflow-browser {
-  position: relative;
-  z-index: 1;
-}
-
-.workflow-browser {
-  transform: translateZ(0) rotateX(0.35deg);
-}
-
-.workflow-browser-body,
-.workflow-copy,
-.workflow-board-wrap {
-  position: relative;
-  z-index: 2;
-}
-
-.workflow-board {
-  transform: translateZ(12px) rotateY(-1deg);
-}
-
-.workflow-browser:hover .workflow-board {
-  transform: translateZ(20px) rotateY(-1.6deg) rotateX(0.35deg);
-}
-
-.workflow-powerpoint,
-.workflow-teams,
-.workflow-powerpoint .workflow-stage,
-.workflow-teams .workflow-stage,
-.workflow-powerpoint .workflow-browser,
-.workflow-teams .workflow-browser,
-.workflow-powerpoint .workflow-browser-body,
-.workflow-teams .workflow-browser-body,
-.workflow-powerpoint .workflow-board-wrap,
-.workflow-teams .workflow-board-wrap,
-.workflow-powerpoint .workflow-board,
-.workflow-teams .workflow-board {
-  z-index: 1;
-  opacity: 1;
-  visibility: visible;
-  filter: none;
-}
-
 @media (max-width: 1100px) {
   .hero-grid,
   .content-grid,
@@ -7013,5 +6964,155 @@ body {
   .music-mode-card {
     transform: none !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* V5.1: final layout and stacking corrections */
+.workflow-card {
+  isolation: isolate;
+}
+
+.workflow-stage,
+.workflow-dock,
+.workflow-browser {
+  position: relative;
+  z-index: 1;
+}
+
+.workflow-browser {
+  transform: translateZ(0) rotateX(0.35deg);
+}
+
+.workflow-browser-body,
+.workflow-copy,
+.workflow-board-wrap {
+  position: relative;
+  z-index: 2;
+}
+
+.workflow-board {
+  position: relative;
+  z-index: 3;
+  transform: translateZ(12px) rotateY(-1deg);
+}
+
+.workflow-browser:hover .workflow-board {
+  transform: translateZ(20px) rotateY(-1.6deg) rotateX(0.35deg);
+}
+
+.workflow-powerpoint,
+.workflow-teams,
+.workflow-powerpoint .workflow-browser,
+.workflow-teams .workflow-browser,
+.workflow-powerpoint .workflow-browser-body,
+.workflow-teams .workflow-browser-body,
+.workflow-powerpoint .workflow-board-wrap,
+.workflow-teams .workflow-board-wrap,
+.workflow-powerpoint .workflow-board,
+.workflow-teams .workflow-board,
+.workflow-powerpoint .workflow-board-panel,
+.workflow-teams .workflow-board-panel {
+  opacity: 1;
+  visibility: visible;
+  filter: none;
+}
+
+.journey-flow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding: 0;
+  overflow: visible;
+}
+
+.journey-flow .trace-connector {
+  display: none;
+}
+
+.journey-flow .trace-card {
+  width: 100%;
+  min-width: 0;
+  min-height: 270px;
+  padding: 26px;
+}
+
+.trace-card {
+  gap: 16px;
+  border-radius: 28px;
+}
+
+.trace-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 17px;
+}
+
+.trace-meta small {
+  padding: 6px 8px;
+  font-size: 0.67rem;
+}
+
+.trace-copy > strong {
+  font-size: 1.18rem;
+}
+
+.trace-copy > span:last-child {
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.network-field {
+  min-height: 760px;
+}
+
+.network-field > .trace-card,
+.trace-card.compact {
+  width: 258px;
+  min-height: 150px;
+  padding: 20px;
+}
+
+.network-field > .trace-card[data-node="risk"],
+.network-field > .trace-card[data-node="models"] {
+  top: 290px;
+}
+
+.network-field > .trace-card[data-node="defi"] {
+  bottom: 30px;
+  left: calc(50% - 129px);
+}
+
+.trace-card.horizontal {
+  min-height: 190px;
+  padding: 22px;
+}
+
+.trace-card.horizontal[data-node="decision"] {
+  min-height: 166px;
+}
+
+@media (max-width: 720px) {
+  .journey-flow {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .journey-flow .trace-card,
+  .trace-card.horizontal {
+    min-height: 210px;
+  }
+
+  .network-field {
+    grid-template-columns: 1fr;
+  }
+
+  .network-field > .trace-card,
+  .trace-card.compact {
+    width: 100%;
+    min-height: 172px;
+  }
+
+  .network-field > .trace-card[data-node="defi"] {
+    grid-column: auto;
   }
 }
