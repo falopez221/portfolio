@@ -7,6 +7,7 @@ import {
   PersonSimpleSwim,
   PersonSimpleWalk,
   PingPong,
+  SpeakerHigh,
   SoccerBall,
   TennisBall,
   Waveform,
@@ -15,7 +16,7 @@ import AudioCard from "./AudioCard.jsx";
 import PhotoCard from "./PhotoCard.jsx";
 import PodcastCard from "./PodcastCard.jsx";
 import { audioIntro, currentPodcast, photoCards } from "../data/content.js";
-import { playSound, selectSound, tapSound } from "../utils/sounds";
+import { playSound, playSportSound, tapSound } from "../utils/sounds";
 
 const premiumEase = [0.22, 1, 0.36, 1];
 
@@ -28,6 +29,15 @@ const sports = [
     summary: "Read space quickly, share tempo and adapt with the team.",
     connection: "Fast pattern recognition becomes clearer when every move depends on others.",
     signal: "Team rhythm",
+    tempo: "Shared tempo",
+    accent: "#2d8067",
+    accentRgb: "45, 128, 103",
+    motion: {
+      x: [0, 4, 0],
+      y: [0, -8, 0],
+      rotate: [0, -14, 8, 0],
+      duration: 1.9,
+    },
   },
   {
     id: "tennis",
@@ -37,6 +47,15 @@ const sports = [
     summary: "Anticipation, focus and controlled decisions under pressure.",
     connection: "A point is a short strategy cycle: observe, choose, execute, reset.",
     signal: "Focused pressure",
+    tempo: "Point-by-point reset",
+    accent: "#b58a27",
+    accentRgb: "181, 138, 39",
+    motion: {
+      x: [-9, 9, -9],
+      y: [5, -7, 5],
+      rotate: [0, 140, 280, 360],
+      duration: 2.2,
+    },
   },
   {
     id: "pingpong",
@@ -46,6 +65,15 @@ const sports = [
     summary: "Speed, reflexes and immediate adjustment to changing angles.",
     connection: "Small changes create instant consequences, sharpening feedback loops.",
     signal: "Rapid feedback",
+    tempo: "Fast exchange",
+    accent: "#cc684d",
+    accentRgb: "204, 104, 77",
+    motion: {
+      x: [-5, 5, -5],
+      y: [0, -3, 0],
+      rotate: [-12, 14, -12],
+      duration: 0.72,
+    },
   },
   {
     id: "swimming",
@@ -55,6 +83,15 @@ const sports = [
     summary: "Rhythm, endurance and a clean mental reset.",
     connection: "Repetition creates room for deeper thinking without adding noise.",
     signal: "Endurance",
+    tempo: "Steady cadence",
+    accent: "#317fbd",
+    accentRgb: "49, 127, 189",
+    motion: {
+      x: [-12, 12, -12],
+      y: [2, -3, 2],
+      rotate: [-3, 2, -3],
+      duration: 2.4,
+    },
   },
   {
     id: "walking",
@@ -64,6 +101,15 @@ const sports = [
     summary: "Distance from the screen helps ideas connect naturally.",
     connection: "Long-form thinking often appears once the pace becomes deliberate.",
     signal: "Perspective",
+    tempo: "Deliberate pace",
+    accent: "#687189",
+    accentRgb: "104, 113, 137",
+    motion: {
+      x: [-5, 5, -5],
+      y: [0, -3, 0],
+      rotate: [-4, 4, -4],
+      duration: 1.25,
+    },
   },
 ];
 
@@ -164,7 +210,8 @@ function LifeExperience({ onOpenLink }) {
             <p className="eyebrow">PERSONAL CONTEXT</p>
             <h2>A human layer, edited with restraint.</h2>
           </div>
-          <p>One gallery, intentional crops and no repeated photo cards.</p>
+          <p>Two selected frames, intentional crops and no repeated photo cards.</p>
+          <span className="life-photo-count">02 selected frames</span>
         </div>
         <PhotoCard {...photoCards[0]} depth={0.1} />
       </section>
@@ -177,19 +224,34 @@ function SportPanel({ selectedId, onSelect }) {
   const SelectedIcon = selected.icon;
 
   const handleSelect = (id) => {
-    playSound(selectSound);
+    playSportSound(id);
     onSelect(id);
   };
 
   return (
-    <div className="sport-layout">
-      <div className="sport-network">
-        <div className="sport-core">
+    <div
+      className={`sport-layout sport-${selected.id}`}
+      style={{
+        "--sport-accent": selected.accent,
+        "--sport-accent-rgb": selected.accentRgb,
+      }}
+    >
+      <div className="sport-network" data-active-sport={selected.id}>
+        <div className="sport-network-head">
+          <span>ACTIVE MOTION</span>
+          <strong>{selected.title}</strong>
+        </div>
+
+        <m.div
+          className="sport-core"
+          animate={{ scale: [1, 1.018, 1], rotate: [0, 0.45, 0] }}
+          transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+        >
           <Heartbeat size={36} weight="duotone" />
           <span>MOVEMENT</span>
           <strong>Reset the model</strong>
           <small>Five ways to sharpen pace and perspective</small>
-        </div>
+        </m.div>
 
         <div className="sport-orbit-grid">
           {sports.map((sport, index) => {
@@ -202,13 +264,35 @@ function SportPanel({ selectedId, onSelect }) {
                 type="button"
                 className={`sport-node ${active ? "active" : ""}`}
                 onClick={() => handleSelect(sport.id)}
-                style={{ "--sport-index": index }}
+                aria-pressed={active}
+                style={{
+                  "--sport-index": index,
+                  "--sport-node-accent": sport.accent,
+                  "--sport-node-rgb": sport.accentRgb,
+                }}
                 whileHover={{ y: -7, z: 34, rotateX: -2 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <span className="sport-node-icon">
+                <m.span
+                  className="sport-node-icon"
+                  animate={active
+                    ? {
+                        x: sport.motion.x,
+                        y: sport.motion.y,
+                        rotate: sport.motion.rotate,
+                        scale: [1, 1.08, 1],
+                      }
+                    : { x: 0, y: 0, rotate: 0, scale: 1 }}
+                  transition={active
+                    ? {
+                        duration: sport.motion.duration,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }
+                    : { duration: 0.28, ease: premiumEase }}
+                >
                   <Icon size={26} weight="duotone" />
-                </span>
+                </m.span>
                 <span>
                   <small>{sport.hash}</small>
                   <strong>{sport.title}</strong>
@@ -220,17 +304,71 @@ function SportPanel({ selectedId, onSelect }) {
         </div>
       </div>
 
-      <aside className="sport-detail" aria-live="polite">
-        <span className="sport-detail-icon">
-          <SelectedIcon size={34} weight="duotone" />
-        </span>
-        <p className="eyebrow">{selected.hash} | ACTIVE CONNECTION</p>
-        <h2>{selected.title}</h2>
-        <p>{selected.summary}</p>
-        <div>
-          <strong>Connection</strong>
-          <span>{selected.connection}</span>
-        </div>
+      <aside
+        className="sport-detail"
+        aria-live="polite"
+        style={{
+          "--sport-accent": selected.accent,
+          "--sport-accent-rgb": selected.accentRgb,
+        }}
+      >
+        <AnimatePresence mode="wait">
+          <m.div
+            key={selected.id}
+            className="sport-detail-shell"
+            initial={{ opacity: 0, y: 18, rotateY: -2, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, rotateY: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -12, rotateY: 2, filter: "blur(6px)" }}
+            transition={{ duration: 0.42, ease: premiumEase }}
+          >
+            <div className="sport-detail-visual">
+              <m.span
+                className="sport-detail-icon"
+                animate={{
+                  x: selected.motion.x,
+                  y: selected.motion.y,
+                  rotate: selected.motion.rotate,
+                  scale: [1, 1.06, 1],
+                }}
+                transition={{
+                  duration: selected.motion.duration,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <SelectedIcon size={58} weight="duotone" />
+              </m.span>
+              <span className="sport-motion-label">{selected.tempo}</span>
+            </div>
+
+            <div className="sport-detail-copy">
+              <p className="eyebrow">{selected.hash} | ACTIVE CONNECTION</p>
+              <h2>{selected.title}</h2>
+              <p>{selected.summary}</p>
+
+              <div className="sport-detail-facts">
+                <span>
+                  <small>Rhythm</small>
+                  <strong>{selected.tempo}</strong>
+                </span>
+                <span>
+                  <small>Signal</small>
+                  <strong>{selected.signal}</strong>
+                </span>
+              </div>
+
+              <div className="sport-connection">
+                <strong>Connection</strong>
+                <span>{selected.connection}</span>
+              </div>
+
+              <span className="sport-sound-cue">
+                <SpeakerHigh size={15} weight="fill" />
+                Select a discipline to hear its cue
+              </span>
+            </div>
+          </m.div>
+        </AnimatePresence>
       </aside>
     </div>
   );

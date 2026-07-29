@@ -13,7 +13,6 @@ import {
   contactCards,
   experienceCards,
   profile,
-  quickFacts,
   workflowApps,
 } from "./data/content.js";
 import CalendarCard from "./components/CalendarCard.jsx";
@@ -25,7 +24,6 @@ import LifeExperience from "./components/LifeExperience.jsx";
 
 const navItems = [
   { label: "Home", id: "home" },
-  { label: "About", id: "about" },
   { label: "Work", id: "work" },
   { label: "Venture", id: "venture" },
   { label: "Life", id: "life" },
@@ -125,48 +123,6 @@ const contactTopics = [
     label: "Coffee chat",
     subject: "Coffee chat",
     body: "Hi Francisco, I would like to schedule a quick coffee chat.",
-  },
-];
-
-const aboutPrinciples = [
-  {
-    title: "Clarity",
-    eyebrow: "PRINCIPLE 01",
-    text: "Turn ambiguous questions into a clean decision path.",
-    detail: "Clear assumptions, structured synthesis and executive-ready output.",
-    tags: ["Synthesis", "Signal", "Judgment"],
-  },
-  {
-    title: "Structured thinking",
-    eyebrow: "PRINCIPLE 02",
-    text: "Break complex situations into drivers, scenarios and trade-offs.",
-    detail: "A consulting rhythm for framing problems before solving them.",
-    tags: ["Problem solving", "Drivers", "Scenarios"],
-  },
-  {
-    title: "Finance lens",
-    eyebrow: "PRINCIPLE 03",
-    text: "Read strategy through cash flow, risk and enterprise value.",
-    detail: "Valuation, sensitivity and capital logic as practical decision tools.",
-    tags: ["Valuation", "CFO & EV", "Risk"],
-  },
-  {
-    title: "Execution mindset",
-    eyebrow: "PRINCIPLE 04",
-    text: "Move from analysis to polished materials people can act on.",
-    detail: "Clean slides, concise updates and disciplined communication.",
-    tags: ["Output", "Pace", "Communication"],
-  },
-];
-
-const aboutTimeline = [
-  { year: "2023", label: "Foundation", text: "Finance, analysis and business fundamentals." },
-  { year: "2024", label: "Accenture", text: "Consulting standards, structure and client-ready output." },
-  { year: "2025", label: "CFO & EV", text: "Valuation, enterprise value and strategic finance lens." },
-  {
-    year: "2026",
-    label: "Venture Governance",
-    text: "Building governed, agentic decision systems with human authority.",
   },
 ];
 
@@ -376,8 +332,6 @@ function App() {
                 />
               ) : null}
 
-              {activeSection === "about" ? <AboutView /> : null}
-
               {activeSection === "work" ? (
                 <WorkView handleOpenLink={handleOpenLink} />
               ) : null}
@@ -524,112 +478,6 @@ function HomeView({
             <strong>Open view</strong>
           </m.button>
         ))}
-      </m.section>
-    </>
-  );
-}
-
-function AboutView() {
-  return (
-    <>
-      <m.section
-        className="about-interactive-hero"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-12% 0px" }}
-      >
-        <m.article className="about-human-copy about-story-lead" data-reveal="up" variants={cardVariants}>
-          <p className="eyebrow">ABOUT</p>
-          <h2>Finance thinking, consulting rhythm, personal clarity.</h2>
-          <p>
-            I like work that turns ambiguity into a useful decision path: clear assumptions,
-            disciplined analysis and output people can act on.
-          </p>
-          <div className="mini-grid">
-            {quickFacts.map((fact) => (
-              <span key={fact} className="mini-pill">
-                {fact}
-              </span>
-            ))}
-          </div>
-        </m.article>
-
-        <m.div className="about-depth-panel" data-reveal="up" aria-hidden="true" variants={cardVariants}>
-          <img
-            src="/images/fran-photo-3.jpeg"
-            alt=""
-            className="about-profile-photo"
-            loading="lazy"
-            decoding="async"
-          />
-          <span className="about-depth-orbit orbit-one" />
-          <span className="about-depth-orbit orbit-two" />
-          <div className="about-depth-card">
-            <span>CFO & EV</span>
-            <strong>Structured profile</strong>
-            <small>Strategy | Finance | Execution</small>
-          </div>
-        </m.div>
-      </m.section>
-
-      <m.section
-        className="about-principles"
-        aria-label="About principles"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-12% 0px" }}
-      >
-        {aboutPrinciples.map((principle, index) => (
-          <m.article
-            key={principle.title}
-            className="card about-principle-card interactive-card"
-            data-reveal="up"
-            style={{ "--principle-index": index }}
-            variants={cardVariants}
-            whileHover={premiumHover}
-            onMouseEnter={() => playSound(hoverSound)}
-          >
-            <div className="about-skill-topline">
-              <p className="eyebrow">{principle.eyebrow}</p>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-            </div>
-            <h2>{principle.title}</h2>
-            <strong>{principle.text}</strong>
-            <p>{principle.detail}</p>
-            <div className="tag-row">
-              {principle.tags.map((tag) => (
-                <span key={tag} className="tag">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </m.article>
-        ))}
-      </m.section>
-
-      <m.section
-        className="about-timeline card"
-        data-reveal="up"
-        variants={cardVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-12% 0px" }}
-      >
-        <div className="about-timeline-head">
-          <p className="eyebrow">GROWTH PATH</p>
-          <h2>From finance foundation to enterprise value lens.</h2>
-        </div>
-        <div className="about-timeline-track">
-          {aboutTimeline.map((item) => (
-            <article key={item.year} className="about-timeline-item">
-              <span>{item.year}</span>
-              <strong>{item.label}</strong>
-              <p>{item.text}</p>
-            </article>
-          ))}
-        </div>
       </m.section>
     </>
   );
@@ -891,7 +739,6 @@ function FloatingNav({ activeId, onNavigate, theme, onToggleTheme, isScrolled })
 function ViewHeader({ activeSection }) {
   const labels = {
     home: "Executive cockpit",
-    about: "Profile, mindset and value lens",
     work: "Capability room",
     venture: "Governed intelligence, DeFi and agentic systems",
     life: "Sport, music and personal context",
