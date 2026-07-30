@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   Bank,
@@ -227,6 +227,7 @@ const tabs = [
 ];
 
 function VentureExperience({ onOpenLink }) {
+  const shouldReduceMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState("journey");
   const [selection, setSelection] = useState({
     journey: "venture",
@@ -269,9 +270,11 @@ function VentureExperience({ onOpenLink }) {
     <div className="venture-page">
       <m.section
         className="venture-intro"
-        initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
+        initial={
+          shouldReduceMotion ? false : { opacity: 0, y: 24, filter: "blur(10px)" }
+        }
         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        transition={{ duration: 0.7, ease: premiumEase }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.7, ease: premiumEase }}
       >
         <div>
           <p className="eyebrow">FOUNDER | VENTURE GOVERNANCE SYSTEM</p>
@@ -298,9 +301,11 @@ function VentureExperience({ onOpenLink }) {
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            id={`venture-tab-${tab.id}`}
             type="button"
             role="tab"
             aria-selected={activeTab === tab.id}
+            aria-controls={`venture-panel-${tab.id}`}
             className={activeTab === tab.id ? "active" : ""}
             onClick={() => handleTab(tab.id)}
           >
@@ -313,11 +318,22 @@ function VentureExperience({ onOpenLink }) {
       <AnimatePresence mode="wait">
         <m.section
           key={activeTab}
+          id={`venture-panel-${activeTab}`}
+          role="tabpanel"
+          aria-labelledby={`venture-tab-${activeTab}`}
           className={`venture-surface venture-${activeTab}`}
-          initial={{ opacity: 0, x: 24, rotateY: -2, filter: "blur(8px)" }}
+          initial={
+            shouldReduceMotion
+              ? false
+              : { opacity: 0, x: 24, rotateY: -2, filter: "blur(8px)" }
+          }
           animate={{ opacity: 1, x: 0, rotateY: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, x: -18, rotateY: 2, filter: "blur(6px)" }}
-          transition={{ duration: 0.46, ease: premiumEase }}
+          exit={
+            shouldReduceMotion
+              ? { opacity: 0 }
+              : { opacity: 0, x: -18, rotateY: 2, filter: "blur(6px)" }
+          }
+          transition={{ duration: shouldReduceMotion ? 0 : 0.46, ease: premiumEase }}
           onPointerMove={handleTilt}
           onPointerLeave={resetTilt}
         >
@@ -363,6 +379,10 @@ function VentureExperience({ onOpenLink }) {
 
 function JourneyPanel({ nodes, selectedId, onSelect, expanded, onToggle }) {
   const selected = nodes.find((node) => node.id === selectedId) ?? nodes[0];
+  const selectedIndex = Math.max(
+    0,
+    nodes.findIndex((node) => node.id === selectedId)
+  );
 
   return (
     <>
@@ -374,18 +394,39 @@ function JourneyPanel({ nodes, selectedId, onSelect, expanded, onToggle }) {
         <span className="surface-seal">HUMAN-IN-COMMAND</span>
       </div>
 
-      <div className="journey-layout">
-        <div className="journey-flow" aria-label="Decision journey">
-          {nodes.map((node, index) => (
-            <React.Fragment key={node.id}>
-              <TraceCard
-                node={node}
-                active={selectedId === node.id}
-                onSelect={() => onSelect(node.id)}
-                index={index}
+      <div className="journey-layout" data-selected-stage={selectedIndex}>
+        <div
+          className="journey-flow"
+          aria-label="Decision journey"
+          style={{ "--journey-stage": selectedIndex }}
+        >
+          <div className="journey-rail" aria-hidden="true">
+            {nodes.slice(0, -1).map((node, index) => (
+              <span
+                key={node.id}
+                className={`journey-rail-segment segment-${index + 1} ${
+                  index < selectedIndex ? "is-reached" : ""
+                }`}
               />
-              {index < nodes.length - 1 ? <span className="trace-connector" aria-hidden="true" /> : null}
-            </React.Fragment>
+            ))}
+            {nodes.map((node, index) => (
+              <span
+                key={`${node.id}-station`}
+                className={`journey-station station-${index + 1} ${
+                  index < selectedIndex ? "is-reached" : ""
+                } ${index === selectedIndex ? "is-active" : ""}`}
+              />
+            ))}
+          </div>
+          {nodes.map((node, index) => (
+            <TraceCard
+              key={node.id}
+              node={node}
+              active={selectedId === node.id}
+              connected={index <= selectedIndex}
+              onSelect={() => onSelect(node.id)}
+              index={index}
+            />
           ))}
         </div>
         <NodeDetail node={selected} expanded={expanded} onToggle={onToggle} />
@@ -408,7 +449,17 @@ function NetworkPanel({ nodes, selectedId, onSelect, expanded, onToggle }) {
       </div>
 
       <div className="network-layout">
-        <div className="network-field">
+        <div className="network-field" data-active-node={selectedId}>
+          <div className="network-links" aria-hidden="true">
+            {nodes.map((node) => (
+              <span
+                key={`${node.id}-link`}
+                data-node={node.id}
+                className={selectedId === node.id ? "is-active" : ""}
+              />
+            ))}
+            <span className="network-authority-link" />
+          </div>
           <div className="network-core" aria-label="Venture Governance System">
             <Fingerprint size={34} weight="duotone" />
             <span>VENTURE GOVERNANCE</span>
@@ -424,6 +475,7 @@ function NetworkPanel({ nodes, selectedId, onSelect, expanded, onToggle }) {
               key={node.id}
               node={node}
               active={selectedId === node.id}
+              connected={selectedId === node.id}
               onSelect={() => onSelect(node.id)}
               index={index}
               compact
@@ -438,6 +490,7 @@ function NetworkPanel({ nodes, selectedId, onSelect, expanded, onToggle }) {
 
 function ConnectionsPanel({ nodes, selectedId, onSelect, expanded, onToggle }) {
   const selected = nodes.find((node) => node.id === selectedId) ?? nodes[0];
+  const showAllConnections = selectedId === "decision";
 
   return (
     <>
@@ -450,17 +503,36 @@ function ConnectionsPanel({ nodes, selectedId, onSelect, expanded, onToggle }) {
       </div>
 
       <div className="connections-layout">
-        <div className="connections-stack">
-          {nodes.map((node, index) => (
-            <TraceCard
-              key={node.id}
-              node={node}
-              active={selectedId === node.id}
-              onSelect={() => onSelect(node.id)}
-              index={index}
-              horizontal
-            />
-          ))}
+        <div className="connections-stack" data-active-node={selectedId}>
+          <div className="connection-links" aria-hidden="true">
+            {nodes
+              .filter((node) => node.id !== "decision")
+              .map((node) => (
+                <span
+                  key={`${node.id}-link`}
+                  data-node={node.id}
+                  className={
+                    showAllConnections || selectedId === node.id ? "is-active" : ""
+                  }
+                />
+              ))}
+          </div>
+          {nodes.map((node, index) => {
+            const connected =
+              showAllConnections || node.id === selectedId || node.id === "decision";
+
+            return (
+              <TraceCard
+                key={node.id}
+                node={node}
+                active={selectedId === node.id}
+                connected={connected}
+                onSelect={() => onSelect(node.id)}
+                index={index}
+                horizontal
+              />
+            );
+          })}
         </div>
         <NodeDetail node={selected} expanded={expanded} onToggle={onToggle} />
       </div>
@@ -468,7 +540,16 @@ function ConnectionsPanel({ nodes, selectedId, onSelect, expanded, onToggle }) {
   );
 }
 
-function TraceCard({ node, active, onSelect, index, compact = false, horizontal = false }) {
+function TraceCard({
+  node,
+  active,
+  connected = false,
+  onSelect,
+  index,
+  compact = false,
+  horizontal = false,
+}) {
+  const shouldReduceMotion = useReducedMotion();
   const Icon = node.icon;
 
   return (
@@ -477,11 +558,13 @@ function TraceCard({ node, active, onSelect, index, compact = false, horizontal 
       className={`trace-card ${active ? "active" : ""} ${compact ? "compact" : ""} ${
         horizontal ? "horizontal" : ""
       }`}
+      aria-pressed={active}
+      aria-controls="venture-node-detail"
       onClick={onSelect}
       style={{ "--trace-index": index }}
       data-node={node.id}
-      whileHover={{ y: -5, z: 30, transition: { duration: 0.2, ease: premiumEase } }}
-      whileTap={{ scale: 0.985 }}
+      data-connection-state={active ? "active" : connected ? "connected" : "idle"}
+      whileTap={shouldReduceMotion ? undefined : { scale: 0.985 }}
     >
       <span className="trace-icon">
         <Icon size={22} weight="duotone" />
@@ -500,46 +583,73 @@ function TraceCard({ node, active, onSelect, index, compact = false, horizontal 
 }
 
 function NodeDetail({ node, expanded, onToggle }) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <aside className="node-detail" aria-live="polite">
-      <div className="node-detail-head">
-        <span className="node-detail-hash">{node.hash}</span>
-        <span>{node.status}</span>
-      </div>
-      <h3>{node.title}</h3>
-      <p>{node.summary}</p>
-
-      <button
-        type="button"
-        className="node-detail-toggle"
-        aria-expanded={expanded}
-        onClick={() => {
-          playSound(tapSound);
-          onToggle();
-        }}
+    <aside
+      id="venture-node-detail"
+      className="node-detail"
+      data-active-node={node.id}
+    >
+      <span className="sr-only" aria-live="polite" aria-atomic="true">
+        {node.title} selected
+      </span>
+      <m.div
+        key={node.id}
+        className="node-detail-content"
+        initial={
+          shouldReduceMotion
+            ? false
+            : { opacity: 0, x: 12, y: 4, filter: "blur(4px)" }
+        }
+        animate={{ opacity: 1, x: 0, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.32, ease: premiumEase }}
       >
-        {expanded ? "Show less" : "Show more"}
-        <m.span animate={{ rotate: expanded ? 180 : 0 }}>
-          <CaretDown size={16} weight="bold" />
-        </m.span>
-      </button>
+        <div className="node-detail-head">
+          <span className="node-detail-hash">{node.hash}</span>
+          <span>{node.status}</span>
+        </div>
+        <h3>{node.title}</h3>
+        <p>{node.summary}</p>
 
-      <AnimatePresence initial={false}>
-        {expanded ? (
-          <m.div
-            className="node-detail-body"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.34, ease: premiumEase }}
+        <button
+          type="button"
+          className="node-detail-toggle"
+          aria-expanded={expanded}
+          onClick={() => {
+            playSound(tapSound);
+            onToggle();
+          }}
+        >
+          {expanded ? "Show less" : "Show more"}
+          <m.span
+            animate={{ rotate: expanded ? 180 : 0 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.24, ease: premiumEase }}
           >
-            <DetailRow label="Context" text={node.context} />
-            <DetailRow label="Connection" text={node.connection} />
-            <DetailRow label="Output" text={node.output} />
-            <DetailRow label="Limits" text={node.limits} />
-          </m.div>
-        ) : null}
-      </AnimatePresence>
+            <CaretDown size={16} weight="bold" />
+          </m.span>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {expanded ? (
+            <m.div
+              className="node-detail-body"
+              initial={shouldReduceMotion ? false : { height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{
+                duration: shouldReduceMotion ? 0 : 0.34,
+                ease: premiumEase,
+              }}
+            >
+              <DetailRow label="Context" text={node.context} />
+              <DetailRow label="Connection" text={node.connection} />
+              <DetailRow label="Output" text={node.output} />
+              <DetailRow label="Limits" text={node.limits} />
+            </m.div>
+          ) : null}
+        </AnimatePresence>
+      </m.div>
     </aside>
   );
 }

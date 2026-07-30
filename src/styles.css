@@ -13013,6 +13013,7 @@ body {
 
   .workflow-command-center .workflow-app-bar {
     display: flex;
+    flex-direction: row;
     flex-wrap: nowrap;
     gap: 9px;
     max-width: 100%;
@@ -13040,6 +13041,7 @@ body {
 
   .workflow-command-center .workflow-browser-tabs {
     display: flex;
+    flex-direction: row;
     max-width: 100%;
     overflow-x: auto;
     padding-bottom: 8px;
