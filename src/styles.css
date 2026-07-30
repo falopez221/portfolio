@@ -12,7 +12,7 @@
   --font-sans: "SF Pro Display", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-editorial: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
 
-  --bg: #cedfec;
+  --bg: #081c36;
   --bg-soft: #d9e6f1;
   --surface: rgba(255, 255, 255, 0.76);
   --surface-strong: rgba(255, 255, 255, 0.9);
@@ -71,7 +71,7 @@ body,
 }
 
 body {
-  background: linear-gradient(180deg, #cedfec 0%, #b9cee2 100%);
+  background: linear-gradient(180deg, #0d2a4d 0%, #06172d 100%);
   background-attachment: fixed;
   color: var(--text);
   overflow-x: hidden;
@@ -312,6 +312,14 @@ img {
   );
 }
 
+:root:not([data-theme="dark"]) .cursor-glow {
+  background: radial-gradient(
+    440px circle at var(--mx) var(--my),
+    rgba(112, 168, 225, 0.14),
+    transparent 50%
+  );
+}
+
 .floating-nav-wrap {
   position: sticky;
   top: 18px;
@@ -498,6 +506,16 @@ img {
 .view-header span {
   color: var(--muted);
   font-size: 0.98rem;
+}
+
+:root:not([data-theme="dark"]) .view-header h2 {
+  color: #f4f8fd;
+  text-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
+}
+
+:root:not([data-theme="dark"]) .view-header span,
+:root:not([data-theme="dark"]) .view-header .eyebrow {
+  color: rgba(223, 234, 246, 0.74);
 }
 
 .section-offset {
@@ -3789,9 +3807,9 @@ img {
 /* V4: Francisco OS */
 body {
   background:
-    linear-gradient(120deg, rgba(51, 105, 164, 0.08), transparent 34%),
-    linear-gradient(240deg, rgba(91, 141, 213, 0.1), transparent 38%),
-    linear-gradient(180deg, #cedfec 0%, #c5d8e7 42%, #b9cee2 100%);
+    linear-gradient(120deg, rgba(73, 137, 205, 0.16), transparent 34%),
+    linear-gradient(240deg, rgba(48, 96, 158, 0.14), transparent 38%),
+    linear-gradient(180deg, #0d2a4d 0%, #0a213e 42%, #06172d 100%);
 }
 
 :root[data-theme="dark"] body {
@@ -3840,9 +3858,15 @@ body {
 
 :root:not([data-theme="dark"]) .ambient-field::before {
   background:
-    linear-gradient(115deg, transparent 0 20%, rgba(199, 220, 239, 0.26) 31%, transparent 43%),
-    linear-gradient(15deg, transparent 0 42%, rgba(29, 78, 137, 0.08) 52%, transparent 66%),
-    radial-gradient(circle at 50% 0%, rgba(189, 213, 235, 0.28), transparent 42%);
+    linear-gradient(115deg, transparent 0 20%, rgba(82, 145, 207, 0.12) 31%, transparent 43%),
+    linear-gradient(15deg, transparent 0 42%, rgba(29, 78, 137, 0.14) 52%, transparent 66%),
+    radial-gradient(circle at 50% 0%, rgba(75, 137, 199, 0.16), transparent 42%);
+}
+
+:root:not([data-theme="dark"]) .ambient-grid {
+  background-image:
+    linear-gradient(rgba(185, 213, 240, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(185, 213, 240, 0.06) 1px, transparent 1px);
 }
 
 .ambient-grid {
