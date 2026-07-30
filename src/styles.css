@@ -13123,3 +13123,710 @@ body {
     transform: none !important;
   }
 }
+
+/* V6: Venture connected depth system */
+.venture-page .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.venture-page .venture-surface {
+  perspective: 1400px;
+}
+
+.venture-page .journey-layout,
+.venture-page .network-layout,
+.venture-page .connections-layout,
+.venture-page .journey-flow,
+.venture-page .network-field,
+.venture-page .connections-stack {
+  transform-style: preserve-3d;
+}
+
+.venture-page .journey-layout,
+.venture-page .network-layout,
+.venture-page .connections-layout {
+  isolation: isolate;
+}
+
+.venture-page .journey-layout::after,
+.venture-page .network-layout::after,
+.venture-page .connections-layout::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  right: 350px;
+  width: 24px;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(73, 142, 221, 0.12), rgba(102, 186, 235, 0.8));
+  box-shadow: 0 0 18px rgba(73, 142, 221, 0.34);
+  transform: translateZ(32px);
+}
+
+.venture-page .journey-layout::after {
+  top: 24%;
+}
+
+.venture-page .journey-layout[data-selected-stage="2"]::after,
+.venture-page .journey-layout[data-selected-stage="3"]::after {
+  top: 72%;
+}
+
+.venture-page .network-layout::after {
+  top: 50%;
+}
+
+.venture-page .connections-layout::after {
+  top: 64%;
+}
+
+.venture-page .trace-card {
+  --trace-z: 16px;
+  --trace-y: 0px;
+  --trace-rx: 0deg;
+  --trace-ry: 0deg;
+  --trace-scale: 1;
+  isolation: isolate;
+  overflow: visible;
+  transform:
+    translate3d(0, var(--trace-y), var(--trace-z))
+    rotateX(var(--trace-rx))
+    rotateY(var(--trace-ry))
+    scale(var(--trace-scale));
+  transform-style: preserve-3d;
+  transition:
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 300ms ease,
+    background 300ms ease,
+    box-shadow 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 300ms ease;
+}
+
+.venture-page .trace-card::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 1px 1px auto;
+  height: 44%;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.66), transparent 62%);
+  opacity: 0.48;
+}
+
+.venture-page .trace-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: 8%;
+  bottom: -14px;
+  left: 8%;
+  height: 30px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: rgba(55, 142, 220, 0.28);
+  filter: blur(18px);
+  opacity: 0;
+  transition: opacity 320ms ease;
+}
+
+.venture-page .trace-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.venture-page .trace-card[data-connection-state="connected"]:not(.active) {
+  border-color: rgba(64, 137, 217, 0.24);
+  box-shadow:
+    0 20px 48px rgba(20, 53, 91, 0.1),
+    0 7px 16px rgba(20, 53, 91, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+}
+
+.venture-page .trace-card.active {
+  --trace-z: 58px;
+  --trace-y: -5px;
+  z-index: 8;
+  border-color: rgba(105, 190, 239, 0.76);
+  box-shadow:
+    0 38px 80px rgba(7, 27, 58, 0.28),
+    0 13px 24px rgba(7, 27, 58, 0.2),
+    0 0 0 1px rgba(112, 203, 244, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.venture-page .trace-card.active::before {
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.24), transparent 58%);
+  opacity: 0.76;
+}
+
+.venture-page .trace-card.active::after {
+  opacity: 0.86;
+}
+
+.venture-page .trace-card:focus-visible {
+  outline: 3px solid rgba(40, 111, 211, 0.44);
+  outline-offset: 4px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .venture-page .trace-card:hover {
+    --trace-y: -8px;
+    --trace-rx: -0.9deg;
+    --trace-ry: 0.7deg;
+    z-index: 9;
+  }
+
+  .venture-page .trace-card.active:hover {
+    --trace-z: 66px;
+  }
+
+  .venture-page .trace-card:active {
+    --trace-scale: 0.985;
+  }
+}
+
+.venture-page .journey-flow {
+  position: relative;
+  isolation: isolate;
+  perspective: 1400px;
+}
+
+.venture-page .journey-flow .trace-card {
+  position: relative;
+  z-index: 2;
+}
+
+.venture-page .journey-flow .trace-card[data-node="finance"] {
+  --trace-z: 14px;
+  --trace-ry: 0.45deg;
+}
+
+.venture-page .journey-flow .trace-card[data-node="agents"] {
+  --trace-z: 20px;
+  --trace-ry: -0.45deg;
+}
+
+.venture-page .journey-flow .trace-card[data-node="venture"] {
+  --trace-z: 28px;
+  --trace-ry: 0.35deg;
+}
+
+.venture-page .journey-flow .trace-card[data-node="human"] {
+  --trace-z: 36px;
+  --trace-ry: -0.35deg;
+}
+
+.venture-page .journey-flow .trace-card.active {
+  --trace-z: 58px;
+}
+
+.venture-page .journey-flow .trace-card[data-node="human"].active {
+  --trace-z: 64px;
+}
+
+.venture-page .journey-rail {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  transform: translateZ(8px);
+}
+
+.venture-page .journey-rail-segment {
+  position: absolute;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(51, 109, 178, 0.12), rgba(51, 109, 178, 0.3));
+  box-shadow: 0 0 12px rgba(51, 109, 178, 0.1);
+  transform-origin: left center;
+  transition:
+    background 360ms ease,
+    box-shadow 360ms ease,
+    opacity 360ms ease;
+}
+
+.venture-page .journey-rail-segment.segment-1 {
+  top: 25%;
+  left: 25%;
+  width: 50%;
+}
+
+.venture-page .journey-rail-segment.segment-2 {
+  top: 25%;
+  left: 75%;
+  width: 70.7%;
+  transform: rotate(135deg);
+}
+
+.venture-page .journey-rail-segment.segment-3 {
+  top: 75%;
+  left: 25%;
+  width: 50%;
+}
+
+.venture-page .journey-rail-segment.is-reached {
+  background: linear-gradient(90deg, rgba(50, 125, 216, 0.5), rgba(104, 202, 239, 0.92));
+  box-shadow: 0 0 18px rgba(62, 153, 226, 0.44);
+}
+
+.venture-page .journey-station {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 2px solid rgba(80, 140, 207, 0.32);
+  border-radius: 50%;
+  background: rgba(242, 248, 253, 0.96);
+  box-shadow: 0 5px 12px rgba(23, 62, 103, 0.16);
+  translate: -50% -50%;
+  transition:
+    scale 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 320ms ease,
+    box-shadow 320ms ease;
+}
+
+.venture-page .journey-station.station-1,
+.venture-page .journey-station.station-3 {
+  left: calc(50% - 10px);
+}
+
+.venture-page .journey-station.station-2,
+.venture-page .journey-station.station-4 {
+  left: calc(50% + 10px);
+}
+
+.venture-page .journey-station.station-1,
+.venture-page .journey-station.station-2 {
+  top: 25%;
+}
+
+.venture-page .journey-station.station-3,
+.venture-page .journey-station.station-4 {
+  top: 75%;
+}
+
+.venture-page .journey-station.is-reached {
+  border-color: rgba(91, 190, 232, 0.72);
+  background: #5fc4e9;
+  box-shadow: 0 0 16px rgba(74, 165, 225, 0.6);
+}
+
+.venture-page .journey-station.is-active {
+  scale: 1.45;
+  border-color: white;
+  background: #72d5c0;
+  box-shadow: 0 0 0 5px rgba(72, 177, 215, 0.14), 0 0 18px rgba(72, 177, 215, 0.68);
+}
+
+.venture-page .network-field {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  perspective: 1400px;
+}
+
+.venture-page .network-field::before {
+  z-index: 0;
+  box-shadow: 0 0 40px rgba(63, 143, 218, 0.08);
+}
+
+.venture-page .network-field::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 20% 17%;
+  border: 1px solid rgba(77, 151, 222, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: rotate(11deg) translateZ(5px);
+}
+
+.venture-page .network-links {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  transform: translateZ(10px);
+}
+
+.venture-page .network-links > span:not(.network-authority-link) {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34%;
+  height: 2px;
+  border-radius: 999px;
+  opacity: 0.28;
+  background: linear-gradient(90deg, rgba(64, 130, 204, 0.14), rgba(64, 130, 204, 0.52));
+  transform-origin: left center;
+  transition:
+    opacity 320ms ease,
+    background 320ms ease,
+    box-shadow 320ms ease;
+}
+
+.venture-page .network-links > span[data-node="finance"] {
+  transform: rotate(-138deg);
+}
+
+.venture-page .network-links > span[data-node="strategy"] {
+  transform: rotate(-42deg);
+}
+
+.venture-page .network-links > span[data-node="risk"] {
+  width: 30%;
+  transform: rotate(176deg);
+}
+
+.venture-page .network-links > span[data-node="models"] {
+  width: 30%;
+  transform: rotate(4deg);
+}
+
+.venture-page .network-links > span[data-node="defi"] {
+  width: 29%;
+  transform: rotate(90deg);
+}
+
+.venture-page .network-links > span.is-active {
+  opacity: 1;
+  background: linear-gradient(90deg, rgba(98, 202, 239, 0.9), rgba(70, 134, 219, 0.42));
+  box-shadow: 0 0 16px rgba(72, 171, 226, 0.62);
+}
+
+.venture-page .network-authority-link {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 22%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(104, 202, 239, 0.55), rgba(106, 215, 185, 0.78));
+  box-shadow: 0 0 14px rgba(80, 179, 219, 0.34);
+}
+
+.venture-page .network-core {
+  z-index: 5;
+  box-shadow:
+    0 46px 96px rgba(7, 27, 58, 0.34),
+    0 12px 26px rgba(7, 27, 58, 0.28),
+    0 0 54px rgba(56, 135, 219, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  transform: translate(-50%, -50%) translateZ(78px) rotateX(2deg) rotateY(-2deg);
+}
+
+.venture-page .network-core::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -22px;
+  border: 1px solid rgba(94, 189, 235, 0.14);
+  border-radius: 48px;
+  background: radial-gradient(circle, rgba(63, 147, 224, 0.13), transparent 68%);
+  box-shadow: 0 0 48px rgba(61, 146, 225, 0.16);
+}
+
+.venture-page .network-core::after {
+  content: "";
+  position: absolute;
+  inset: 1px 1px auto;
+  height: 42%;
+  border-radius: inherit;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.22), transparent 62%);
+}
+
+.venture-page .network-human-gate {
+  z-index: 7;
+  transform: translateX(-50%) translateZ(90px);
+}
+
+.venture-page .network-field > .trace-card {
+  z-index: 3;
+  --trace-z: 20px;
+}
+
+.venture-page .network-field > .trace-card[data-node="strategy"],
+.venture-page .network-field > .trace-card[data-node="models"] {
+  --trace-z: 26px;
+}
+
+.venture-page .network-field > .trace-card[data-node="defi"] {
+  --trace-z: 30px;
+}
+
+.venture-page .network-field > .trace-card.active {
+  --trace-z: 58px;
+  z-index: 8;
+}
+
+.venture-page .connections-stack {
+  position: relative;
+  isolation: isolate;
+  perspective: 1400px;
+}
+
+.venture-page .connections-stack::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 8%;
+  bottom: 9%;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(65, 136, 211, 0.28) 14% 86%, transparent);
+  box-shadow: 0 0 12px rgba(65, 136, 211, 0.14);
+}
+
+.venture-page .connection-links {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  transform: translateZ(8px);
+}
+
+.venture-page .connection-links > span {
+  position: absolute;
+  left: 25%;
+  width: 81%;
+  height: 1px;
+  border-radius: 999px;
+  opacity: 0.14;
+  background: linear-gradient(90deg, rgba(67, 137, 211, 0.34), rgba(67, 137, 211, 0.08));
+  transform-origin: left center;
+  transition:
+    opacity 320ms ease,
+    background 320ms ease,
+    box-shadow 320ms ease;
+}
+
+.venture-page .connection-links > span[data-node="valuation"] {
+  top: 12%;
+  transform: rotate(72deg);
+}
+
+.venture-page .connection-links > span[data-node="risk"] {
+  top: 12%;
+  left: 75%;
+  transform: rotate(108deg);
+}
+
+.venture-page .connection-links > span[data-node="strategy"] {
+  top: 39%;
+  width: 56%;
+  transform: rotate(64deg);
+}
+
+.venture-page .connection-links > span[data-node="defi"] {
+  top: 39%;
+  left: 75%;
+  width: 56%;
+  transform: rotate(116deg);
+}
+
+.venture-page .connection-links > span[data-node="agentic"] {
+  top: 65%;
+  width: 35%;
+  transform: rotate(44deg);
+}
+
+.venture-page .connection-links > span[data-node="governance"] {
+  top: 65%;
+  left: 75%;
+  width: 35%;
+  transform: rotate(136deg);
+}
+
+.venture-page .connection-links > span.is-active {
+  opacity: 0.94;
+  background: linear-gradient(90deg, rgba(91, 194, 235, 0.86), rgba(75, 137, 214, 0.24));
+  box-shadow: 0 0 14px rgba(74, 161, 221, 0.48);
+}
+
+.venture-page .connections-stack > .trace-card {
+  position: relative;
+  z-index: 2;
+}
+
+.venture-page .connections-stack > .trace-card[data-node="valuation"] {
+  --trace-z: 16px;
+}
+
+.venture-page .connections-stack > .trace-card[data-node="risk"],
+.venture-page .connections-stack > .trace-card[data-node="agentic"] {
+  --trace-z: 22px;
+}
+
+.venture-page .connections-stack > .trace-card[data-node="strategy"] {
+  --trace-z: 20px;
+}
+
+.venture-page .connections-stack > .trace-card[data-node="defi"] {
+  --trace-z: 26px;
+}
+
+.venture-page .connections-stack > .trace-card[data-node="governance"] {
+  --trace-z: 30px;
+}
+
+.venture-page .connections-stack > .trace-card[data-node="decision"] {
+  --trace-z: 38px;
+}
+
+.venture-page .connections-stack > .trace-card[data-connection-state="connected"]:not(.active) {
+  --trace-z: 32px;
+  z-index: 4;
+}
+
+.venture-page .connections-stack > .trace-card.active {
+  --trace-z: 58px;
+  z-index: 8;
+}
+
+.venture-page .node-detail {
+  isolation: isolate;
+  overflow: visible;
+  transform: translateZ(56px);
+}
+
+.venture-page .node-detail::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 34px;
+  left: -24px;
+  width: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(69, 149, 221, 0.16), rgba(92, 192, 235, 0.78));
+  box-shadow: 0 0 16px rgba(71, 159, 222, 0.34);
+}
+
+.venture-page .node-detail::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 8% -8% -5% 20%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: rgba(53, 139, 219, 0.12);
+  filter: blur(34px);
+}
+
+.venture-page .node-detail-content > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+@media (max-width: 1180px) {
+  .venture-page .journey-layout::after,
+  .venture-page .network-layout::after,
+  .venture-page .connections-layout::after,
+  .venture-page .node-detail::before {
+    display: none;
+  }
+
+  .venture-page .trace-card.active,
+  .venture-page .journey-flow .trace-card.active,
+  .venture-page .connections-stack > .trace-card.active,
+  .venture-page .network-field > .trace-card.active {
+    --trace-z: 32px;
+  }
+
+  .venture-page .network-core {
+    transform: translate(-50%, -50%) translateZ(46px) rotateX(1deg) rotateY(-1deg);
+  }
+
+  .venture-page .network-human-gate {
+    transform: translateX(-50%) translateZ(50px);
+  }
+
+  .venture-page .node-detail {
+    transform: translateZ(28px);
+  }
+}
+
+@media (max-width: 720px) {
+  .venture-page .venture-surface,
+  .venture-page .journey-flow,
+  .venture-page .network-field,
+  .venture-page .connections-stack {
+    perspective: none;
+  }
+
+  .venture-page .trace-card,
+  .venture-page .trace-card:hover,
+  .venture-page .trace-card.active,
+  .venture-page .journey-flow .trace-card,
+  .venture-page .network-field > .trace-card,
+  .venture-page .connections-stack > .trace-card,
+  .venture-page .node-detail,
+  .venture-page .network-core,
+  .venture-page .network-human-gate {
+    transform: none !important;
+  }
+
+  .venture-page .journey-rail,
+  .venture-page .network-links,
+  .venture-page .network-field::before,
+  .venture-page .network-field::after,
+  .venture-page .connection-links,
+  .venture-page .connections-stack::before {
+    display: none;
+  }
+
+  .venture-page .journey-flow {
+    gap: 18px;
+  }
+
+  .venture-page .journey-flow .trace-card:not(:last-child)::after {
+    right: auto;
+    bottom: -19px;
+    left: 28px;
+    width: 2px;
+    height: 18px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(64, 139, 216, 0.3), rgba(92, 191, 232, 0.72));
+    filter: none;
+    opacity: 1;
+  }
+
+  .venture-page .network-field {
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .venture-page .node-detail {
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .venture-page .trace-card,
+  .venture-page .trace-card::before,
+  .venture-page .trace-card::after,
+  .venture-page .journey-rail-segment,
+  .venture-page .journey-station,
+  .venture-page .network-links > span,
+  .venture-page .connection-links > span {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .venture-page .trace-card,
+  .venture-page .trace-card:hover,
+  .venture-page .trace-card.active {
+    --trace-y: 0px;
+    --trace-rx: 0deg;
+    --trace-ry: 0deg;
+    transform: none !important;
+  }
+}

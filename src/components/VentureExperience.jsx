@@ -334,8 +334,8 @@ function VentureExperience({ onOpenLink }) {
               : { opacity: 0, x: -18, rotateY: 2, filter: "blur(6px)" }
           }
           transition={{ duration: shouldReduceMotion ? 0 : 0.46, ease: premiumEase }}
-          onPointerMove={handleTilt}
-          onPointerLeave={resetTilt}
+          onPointerMove={shouldReduceMotion ? undefined : handleTilt}
+          onPointerLeave={shouldReduceMotion ? undefined : resetTilt}
         >
           {activeTab === "journey" ? (
             <JourneyPanel
@@ -448,7 +448,7 @@ function NetworkPanel({ nodes, selectedId, onSelect, expanded, onToggle }) {
         <span className="surface-seal">4 PUBLIC AGENTS | HUMAN GATE</span>
       </div>
 
-      <div className="network-layout">
+      <div className="network-layout" data-selected-node={selectedId}>
         <div className="network-field" data-active-node={selectedId}>
           <div className="network-links" aria-hidden="true">
             {nodes.map((node) => (
@@ -502,7 +502,7 @@ function ConnectionsPanel({ nodes, selectedId, onSelect, expanded, onToggle }) {
         <span className="surface-seal">SELECT A FIELD</span>
       </div>
 
-      <div className="connections-layout">
+      <div className="connections-layout" data-selected-node={selectedId}>
         <div className="connections-stack" data-active-node={selectedId}>
           <div className="connection-links" aria-hidden="true">
             {nodes
@@ -564,7 +564,6 @@ function TraceCard({
       style={{ "--trace-index": index }}
       data-node={node.id}
       data-connection-state={active ? "active" : connected ? "connected" : "idle"}
-      whileTap={shouldReduceMotion ? undefined : { scale: 0.985 }}
     >
       <span className="trace-icon">
         <Icon size={22} weight="duotone" />
