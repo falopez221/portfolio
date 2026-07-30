@@ -29,3 +29,6 @@ coverage/
 # local Codex preview / QA artifacts
 .codex-design/
 .codex-vite*.log
+
+.vercel
+.env*

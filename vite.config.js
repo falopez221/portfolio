@@ -1,7 +1,20 @@
 import { defineConfig } from "vite";
+import { mkdirSync, copyFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 export default defineConfig({
+  plugins: [
+    {
+      name: "sites-static-worker",
+      closeBundle() {
+        const serverDirectory = resolve("dist/server");
+        mkdirSync(serverDirectory, { recursive: true });
+        copyFileSync(resolve("worker/index.js"), resolve(serverDirectory, "index.js"));
+      },
+    },
+  ],
   build: {
+    outDir: "dist/client",
     rollupOptions: {
       onwarn(warning, warn) {
         if (

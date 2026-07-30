@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
 import {
   hoverSound,
+  playEpicIntroSound,
   playSound,
   selectSound,
-  swoshSound,
+  stopEpicIntroSound,
   tapSound,
   toggleSound,
 } from "./utils/sounds";
@@ -21,6 +22,7 @@ import WorkflowShowcase from "./components/WorkflowShowcase.jsx";
 import MessageCard from "./components/MessageCard.jsx";
 import VentureExperience from "./components/VentureExperience.jsx";
 import LifeExperience from "./components/LifeExperience.jsx";
+import CinematicIntro from "./components/CinematicIntro.jsx";
 
 const navItems = [
   { label: "Home", id: "home" },
@@ -139,6 +141,12 @@ function App() {
   const [isDownloadingCV, setIsDownloadingCV] = useState(false);
   const [isSwitchingView, setIsSwitchingView] = useState(false);
 
+  const handleIntroComplete = useCallback(() => {
+    stopEpicIntroSound();
+    setIntroVisible(false);
+    setPageReady(true);
+  }, []);
+
   useEffect(() => {
     const storedTheme = window.localStorage.getItem("fran-theme");
     const preferredDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -175,33 +183,35 @@ function App() {
   }, []);
 
   useEffect(() => {
-    let hasPlayedIntroSound = false;
-    let isTryingIntroSound = false;
+    if (!introVisible) return undefined;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return undefined;
+    }
 
-    const playIntroSound = async () => {
-      if (hasPlayedIntroSound || isTryingIntroSound) return;
-      isTryingIntroSound = true;
-      const didPlay = await playSound(swoshSound);
-      hasPlayedIntroSound = didPlay;
-      isTryingIntroSound = false;
+    let hasStartedSound = false;
+    let isStartingSound = false;
+
+    const removeSoundFallback = () => {
+      window.removeEventListener("pointerdown", startIntroSound);
+      window.removeEventListener("keydown", startIntroSound);
     };
-    const soundTimer = window.setTimeout(playIntroSound, 420);
-    const firstInteraction = () => playIntroSound();
-    const exitTimer = window.setTimeout(() => {
-      setIntroVisible(false);
-      setPageReady(true);
-    }, 2550);
 
-    window.addEventListener("pointerdown", firstInteraction, { once: true });
-    window.addEventListener("keydown", firstInteraction, { once: true });
+    const startIntroSound = async () => {
+      if (hasStartedSound || isStartingSound) return;
+      isStartingSound = true;
+      hasStartedSound = await playEpicIntroSound();
+      isStartingSound = false;
+      if (hasStartedSound) removeSoundFallback();
+    };
+
+    startIntroSound();
+    window.addEventListener("pointerdown", startIntroSound);
+    window.addEventListener("keydown", startIntroSound);
 
     return () => {
-      window.clearTimeout(soundTimer);
-      window.clearTimeout(exitTimer);
-      window.removeEventListener("pointerdown", firstInteraction);
-      window.removeEventListener("keydown", firstInteraction);
+      removeSoundFallback();
     };
-  }, []);
+  }, [introVisible]);
 
   useEffect(() => {
     document.documentElement.classList.add("motion-ready");
@@ -268,11 +278,61 @@ function App() {
     }, 520);
   };
 
-  const handleNavigate = (sectionId) => {
+  const handleNavigate = (sectionId, sourceElement) => {
     playSound(tapSound);
     setIsSwitchingView(true);
-    setActiveSection(sectionId);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const commitNavigation = () => {
+      setActiveSection(sectionId);
+      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+    };
+
+    if (sourceElement && !reduceMotion && typeof sourceElement.cloneNode === "function") {
+      const rect = sourceElement.getBoundingClientRect();
+      const launchCard = sourceElement.cloneNode(true);
+      const scaleX = (window.innerWidth + 32) / Math.max(rect.width, 1);
+      const scaleY = (window.innerHeight + 32) / Math.max(rect.height, 1);
+
+      launchCard.classList.add("route-card-clone", `route-card-clone-${sectionId}`);
+      launchCard.classList.remove("interactive-card");
+      launchCard.setAttribute("aria-hidden", "true");
+      launchCard.setAttribute("tabindex", "-1");
+      launchCard.style.left = `${rect.left}px`;
+      launchCard.style.top = `${rect.top}px`;
+      launchCard.style.width = `${rect.width}px`;
+      launchCard.style.height = `${rect.height}px`;
+      document.body.appendChild(launchCard);
+
+      const launchAnimation = launchCard.animate(
+        [
+          {
+            transform: "translate3d(0, 0, 0) scale(1)",
+            borderRadius: window.getComputedStyle(sourceElement).borderRadius,
+            opacity: 0.98,
+            filter: "blur(0px)",
+          },
+          {
+            transform: `translate3d(${-rect.left - 16}px, ${-rect.top - 16}px, 0) scale(${scaleX}, ${scaleY})`,
+            borderRadius: "28px",
+            opacity: 0,
+            filter: "blur(12px)",
+          },
+        ],
+        {
+          duration: 620,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          fill: "forwards",
+        }
+      );
+
+      window.setTimeout(commitNavigation, 150);
+      launchAnimation.finished.finally(() => launchCard.remove());
+      window.setTimeout(() => setIsSwitchingView(false), 640);
+      return;
+    }
+
+    commitNavigation();
     window.setTimeout(() => setIsSwitchingView(false), 360);
   };
 
@@ -305,7 +365,9 @@ function App() {
           isSwitchingView ? "is-switching-view" : ""
         }`}
       >
-        {introVisible ? <IntroOverlay /> : null}
+        {introVisible ? (
+          <CinematicIntro durationMs={7800} onComplete={handleIntroComplete} />
+        ) : null}
         <AmbientField />
         <AppleCursorGlow />
         <FloatingNav
@@ -364,24 +426,6 @@ function App() {
   );
 }
 
-function IntroOverlay() {
-  return (
-    <div className="intro-overlay" aria-label="Francisco">
-      <div className="intro-wordmark">
-        <h1>Francisco</h1>
-        <div className="intro-track">
-          <span>Strategy</span>
-          <span>Finance</span>
-          <span>Enterprise Value</span>
-        </div>
-        <div className="intro-loader" aria-hidden="true">
-          <span />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function HomeView({
   handleDownloadCV,
   handleNavigate,
@@ -400,6 +444,8 @@ function HomeView({
     event.currentTarget.style.setProperty("--hero-ry", `${rotateY.toFixed(2)}deg`);
     event.currentTarget.style.setProperty("--hero-mx", `${(x * 100).toFixed(2)}%`);
     event.currentTarget.style.setProperty("--hero-my", `${(y * 100).toFixed(2)}%`);
+    event.currentTarget.style.setProperty("--hero-shift-x", `${((x - 0.5) * 18).toFixed(2)}px`);
+    event.currentTarget.style.setProperty("--hero-shift-y", `${((y - 0.5) * 14).toFixed(2)}px`);
   };
 
   const handleHeroPointerLeave = (event) => {
@@ -407,6 +453,32 @@ function HomeView({
     event.currentTarget.style.setProperty("--hero-ry", "0deg");
     event.currentTarget.style.setProperty("--hero-mx", "72%");
     event.currentTarget.style.setProperty("--hero-my", "18%");
+    event.currentTarget.style.setProperty("--hero-shift-x", "0px");
+    event.currentTarget.style.setProperty("--hero-shift-y", "0px");
+  };
+
+  const handlePathPointerMove = (event) => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+
+    event.currentTarget.style.setProperty("--path-rx", `${((0.5 - y) * 10).toFixed(2)}deg`);
+    event.currentTarget.style.setProperty("--path-ry", `${((x - 0.5) * 12).toFixed(2)}deg`);
+    event.currentTarget.style.setProperty("--path-mx", `${(x * 100).toFixed(2)}%`);
+    event.currentTarget.style.setProperty("--path-my", `${(y * 100).toFixed(2)}%`);
+    event.currentTarget.style.setProperty("--path-shift-x", `${((x - 0.5) * 14).toFixed(2)}px`);
+    event.currentTarget.style.setProperty("--path-shift-y", `${((y - 0.5) * 10).toFixed(2)}px`);
+  };
+
+  const handlePathPointerLeave = (event) => {
+    event.currentTarget.style.setProperty("--path-rx", "0deg");
+    event.currentTarget.style.setProperty("--path-ry", "0deg");
+    event.currentTarget.style.setProperty("--path-mx", "78%");
+    event.currentTarget.style.setProperty("--path-my", "14%");
+    event.currentTarget.style.setProperty("--path-shift-x", "0px");
+    event.currentTarget.style.setProperty("--path-shift-y", "0px");
   };
 
   return (
@@ -443,6 +515,10 @@ function HomeView({
 
           <div className="cockpit-profile">
             <div className="cockpit-visual" aria-hidden="true">
+              <span className="cockpit-grid-plane" />
+              <span className="cockpit-core" />
+              <span className="cockpit-beam cockpit-beam-one" />
+              <span className="cockpit-beam cockpit-beam-two" />
               <span className="cockpit-ring cockpit-ring-one" />
               <span className="cockpit-ring cockpit-ring-two" />
               <span className="cockpit-signal signal-one">EV</span>
@@ -464,26 +540,102 @@ function HomeView({
 
       <m.section className="content-grid home-path-grid" variants={sectionVariants}>
         {homePaths.map((card, index) => (
-          <m.button
+          <m.div
             key={card.id}
-            type="button"
-            className={`card home-path-card home-path-${card.tone} interactive-card span-4`}
-            data-reveal="up"
+            className="home-path-motion span-4"
             variants={cardVariants}
-            whileHover={premiumHover}
-            whileTap={{ scale: 0.985 }}
-            onClick={() => handleNavigate(card.id)}
-            onMouseEnter={() => playSound(hoverSound)}
           >
-            <span className="home-path-index">{String(index + 1).padStart(2, "0")}</span>
-            <p className="eyebrow">{card.label}</p>
-            <h2>{card.title}</h2>
-            <p>{card.text}</p>
-            <strong>Open view</strong>
-          </m.button>
+            <button
+              type="button"
+              className={`card home-path-card home-path-${card.tone} interactive-card`}
+              style={{ "--path-stagger": index }}
+              onClick={(event) => handleNavigate(card.id, event.currentTarget)}
+              onMouseEnter={() => playSound(hoverSound)}
+              onPointerMove={handlePathPointerMove}
+              onPointerLeave={handlePathPointerLeave}
+            >
+              <span className="home-path-depth" aria-hidden="true" />
+              <span className="home-path-index">{String(index + 1).padStart(2, "0")}</span>
+              <HomePathVisual tone={card.tone} />
+              <span className="home-path-copy">
+                <span className="eyebrow">{card.label}</span>
+                <span className="home-path-title">{card.title}</span>
+                <span className="home-path-description">{card.text}</span>
+                <strong>
+                  Open view
+                  <span aria-hidden="true">↗</span>
+                </strong>
+              </span>
+            </button>
+          </m.div>
         ))}
       </m.section>
     </>
+  );
+}
+
+function HomePathVisual({ tone }) {
+  return (
+    <span className={`home-path-visual home-path-visual-${tone}`} aria-hidden="true">
+      <span className="path-visual-halo" />
+      <span className="path-visual-floor" />
+
+      {tone === "work" ? (
+        <span className="path-finance-scene">
+          <span className="finance-panel finance-panel-back">
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="finance-panel finance-panel-mid">
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="finance-panel finance-panel-front">
+            <b />
+            <b />
+            <b />
+            <b />
+            <em />
+          </span>
+        </span>
+      ) : null}
+
+      {tone === "venture" ? (
+        <span className="path-intelligence-scene">
+          <span className="intelligence-orbit intelligence-orbit-one" />
+          <span className="intelligence-orbit intelligence-orbit-two" />
+          <span className="intelligence-orbit intelligence-orbit-three" />
+          <span className="intelligence-core">
+            <i />
+          </span>
+          <span className="intelligence-node node-one" />
+          <span className="intelligence-node node-two" />
+          <span className="intelligence-node node-three" />
+          <span className="intelligence-node node-four" />
+        </span>
+      ) : null}
+
+      {tone === "life" ? (
+        <span className="path-life-scene">
+          <span className="life-disc">
+            <i />
+          </span>
+          <span className="life-wave">
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="life-ribbon life-ribbon-one" />
+          <span className="life-ribbon life-ribbon-two" />
+        </span>
+      ) : null}
+    </span>
   );
 }
 
@@ -491,29 +643,9 @@ function WorkView({ handleOpenLink }) {
   return (
     <>
       <m.section className="content-grid" variants={sectionVariants}>
-        <m.div className="span-8" variants={cardVariants}>
+        <m.div className="span-12" variants={cardVariants}>
           <WorkflowShowcase apps={workflowApps} />
         </m.div>
-        <m.article
-          className="card work-side-panel span-4 section-tone-product"
-          data-reveal="up"
-          variants={cardVariants}
-          whileHover={premiumHover}
-        >
-          <p className="eyebrow">CAPABILITY ROOM</p>
-          <h2>Finance work translated into decision-ready output.</h2>
-          <p>
-            Models, scenarios, research and executive decks arranged as practical consulting capabilities.
-          </p>
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={() => handleOpenLink(profile.linkedin)}
-            onMouseEnter={() => playSound(hoverSound)}
-          >
-            Connect on LinkedIn
-          </button>
-        </m.article>
       </m.section>
 
       <m.section className="content-grid capability-grid" variants={sectionVariants}>
@@ -532,15 +664,37 @@ function WorkView({ handleOpenLink }) {
 function CapabilityCard({ card, index }) {
   const [expanded, setExpanded] = useState(false);
 
+  const handlePointerMove = (event) => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+
+    event.currentTarget.style.setProperty("--capability-mx", `${(x * 100).toFixed(2)}%`);
+    event.currentTarget.style.setProperty("--capability-my", `${(y * 100).toFixed(2)}%`);
+    event.currentTarget.style.setProperty("--capability-rx", `${((0.5 - y) * 8).toFixed(2)}deg`);
+    event.currentTarget.style.setProperty("--capability-ry", `${((x - 0.5) * 10).toFixed(2)}deg`);
+  };
+
+  const handlePointerLeave = (event) => {
+    event.currentTarget.style.setProperty("--capability-mx", "72%");
+    event.currentTarget.style.setProperty("--capability-my", "18%");
+    event.currentTarget.style.setProperty("--capability-rx", "0deg");
+    event.currentTarget.style.setProperty("--capability-ry", "0deg");
+  };
+
   return (
     <m.article
-      className={`card capability-card capability-${index + 1} interactive-card span-4 ${
+      className={`card capability-card capability-${index + 1} capability-theme-${card.visual} interactive-card span-4 ${
         expanded ? "is-expanded" : ""
       }`}
       data-reveal="up"
       variants={cardVariants}
       whileHover={premiumHover}
       onMouseEnter={() => playSound(hoverSound)}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
     >
       <div className="card-topline">
         <p className="eyebrow">{card.eyebrow}</p>
@@ -548,6 +702,7 @@ function CapabilityCard({ card, index }) {
       </div>
       <h3>{card.title}</h3>
       <p className="experience-subtitle">{card.subtitle}</p>
+      <CapabilityVisual type={card.visual} />
       <p>{card.description}</p>
       <div className="tag-row">
         {card.tags.map((tag) => (
@@ -602,6 +757,109 @@ function CapabilityCard({ card, index }) {
         ) : null}
       </AnimatePresence>
     </m.article>
+  );
+}
+
+const capabilityVisualLabels = {
+  accenture: "Strategy in motion",
+  valuation: "Value compounds",
+  risk: "Signals under control",
+  process: "Process intelligence",
+  reporting: "One consolidated view",
+  blockchain: "Connected finance",
+};
+
+function CapabilityVisual({ type }) {
+  const visualType = capabilityVisualLabels[type] ? type : "accenture";
+
+  return (
+    <div className={`capability-visual capability-visual-${visualType}`} aria-hidden="true">
+      <span className="capability-visual-glow" />
+      <span className="capability-particle capability-particle-one" />
+      <span className="capability-particle capability-particle-two" />
+      <span className="capability-particle capability-particle-three" />
+
+      <div className="capability-scene">
+        {visualType === "accenture" ? (
+          <>
+            <span className="accenture-orbit accenture-orbit-one" />
+            <span className="accenture-orbit accenture-orbit-two" />
+            <div className="accenture-cube">
+              <span className="cube-face cube-front" data-glyph="&gt;" />
+              <span className="cube-face cube-back" data-glyph="EV" />
+              <span className="cube-face cube-right" data-glyph="CFO" />
+              <span className="cube-face cube-left" data-glyph="S" />
+              <span className="cube-face cube-top" data-glyph="+" />
+              <span className="cube-face cube-bottom" />
+            </div>
+          </>
+        ) : null}
+
+        {visualType === "valuation" ? (
+          <div className="valuation-object">
+            <span className="valuation-arrow" />
+            <div className="coin-stack coin-stack-one">
+              <span />
+              <span />
+            </div>
+            <div className="coin-stack coin-stack-two">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="coin-stack coin-stack-three">
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        ) : null}
+
+        {visualType === "risk" ? (
+          <div className="risk-gyro">
+            <span className="risk-ring risk-ring-one" />
+            <span className="risk-ring risk-ring-two" />
+            <span className="risk-ring risk-ring-three" />
+            <span className="risk-core" data-glyph="R" />
+            <span className="risk-signal risk-signal-one" />
+            <span className="risk-signal risk-signal-two" />
+          </div>
+        ) : null}
+
+        {visualType === "process" ? (
+          <div className="process-object">
+            <span className="process-track" />
+            <span className="process-node process-node-one" data-step="01" />
+            <span className="process-node process-node-two" data-step="02" />
+            <span className="process-node process-node-three" data-step="03" />
+          </div>
+        ) : null}
+
+        {visualType === "reporting" ? (
+          <div className="reporting-object">
+            <span className="reporting-beam" />
+            <span className="reporting-layer reporting-layer-one" data-layer="SOURCE" />
+            <span className="reporting-layer reporting-layer-two" data-layer="JOURNAL" />
+            <span className="reporting-layer reporting-layer-three" data-layer="GROUP" />
+            <span className="reporting-layer reporting-layer-four" data-layer="VIEW" />
+          </div>
+        ) : null}
+
+        {visualType === "blockchain" ? (
+          <div className="blockchain-object">
+            <span className="chain-link chain-link-one" />
+            <span className="chain-link chain-link-two" />
+            <span className="chain-core" data-glyph="DeFi" />
+            <span className="chain-node chain-node-one" />
+            <span className="chain-node chain-node-two" />
+          </div>
+        ) : null}
+      </div>
+
+      <span className="capability-visual-caption" data-label={capabilityVisualLabels[visualType]} />
+      <span className="capability-visual-status" data-label="LIVE SYSTEM" />
+    </div>
   );
 }
 

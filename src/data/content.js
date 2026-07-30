@@ -90,6 +90,7 @@ export const workflowApps = [
     icon: "XL",
     eyebrow: "MODELING",
     title: "Valuation, cash flow and value drivers.",
+    systemName: "Financial Modeling Engine",
     summary:
       "Armado de flujo de fondos, sensibilidades y drivers financieros para leer escenarios con mayor claridad.",
     browserLabel: "Workbook",
@@ -135,6 +136,7 @@ export const workflowApps = [
     icon: "P",
     eyebrow: "STORYLINE",
     title: "Executive narrative for critical decisions.",
+    systemName: "Executive Storytelling System",
     summary:
       "Sintesis ejecutiva, storylines claras y materiales que ordenan la conversacion con foco en decision-making.",
     browserLabel: "Deck",
@@ -180,6 +182,7 @@ export const workflowApps = [
     icon: "T",
     eyebrow: "SYNC",
     title: "Stakeholder alignment and project rhythm.",
+    systemName: "Collaboration Network",
     summary:
       "Seguimiento de equipos, prioridades y proximos pasos con una cadencia clara y ejecutable.",
     browserLabel: "Sync",
@@ -225,6 +228,7 @@ export const workflowApps = [
     icon: "R",
     eyebrow: "MARKET VIEW",
     title: "Research, benchmarks and risk context.",
+    systemName: "Intelligence Radar",
     summary:
       "Contexto de mercado, benchmarks y riesgos para fortalecer recomendaciones y escenarios.",
     browserLabel: "Research",
@@ -270,6 +274,7 @@ export const experienceCards = [
   {
     eyebrow: "CURRENT ROLE",
     title: "Accenture | CFO & Enterprise Value",
+    visual: "accenture",
     subtitle: "Strategy & Consulting Intern",
     description:
       "Analisis, research y recomendaciones estructuradas en finanzas y estrategia, con foco en claridad, rigor y materiales listos para conversacion ejecutiva.",
@@ -283,6 +288,7 @@ export const experienceCards = [
   {
     eyebrow: "VALUATION AND CASH FLOW",
     title: "Valuacion y Flujo de Fondos",
+    visual: "valuation",
     subtitle: "From assumptions to grounded financial logic",
     description:
       "Armado y analisis de flujo de fondos, metodologias de valuacion y lectura de variables macroeconomicas para construir una mirada financiera clara.",
@@ -296,6 +302,7 @@ export const experienceCards = [
   {
     eyebrow: "STRATEGY AND RISK",
     title: "Estrategia y Riesgos",
+    visual: "risk",
     subtitle: "Decisions under real business pressure",
     description:
       "Analisis de costos, evaluacion de riesgos financieros y toma de decisiones criticas apoyadas en escenarios reales y pensamiento estructurado.",
@@ -309,6 +316,7 @@ export const experienceCards = [
   {
     eyebrow: "SAP PROCESS ANALYSIS",
     title: "Analisis de procesos en SAP",
+    visual: "process",
     subtitle: "From process diagrams to improvement opportunities",
     description:
       "Lectura de diagramas end-to-end en SAP para entender flujos, responsables, puntos de control, integraciones y oportunidades de mejora.",
@@ -322,6 +330,7 @@ export const experienceCards = [
   {
     eyebrow: "SAP FINANCIAL CONSOLIDATION",
     title: "SAP Group Reporting",
+    visual: "reporting",
     subtitle: "Financial consolidation with an architecture lens",
     description:
       "Comprension de la consolidacion financiera en SAP, desde las fuentes y estructuras de grupo hasta validaciones, eliminaciones y reporting consolidado.",
@@ -357,6 +366,7 @@ export const experienceCards = [
   {
     eyebrow: "DIGITAL FINANCE",
     title: "Blockchain and DeFi",
+    visual: "blockchain",
     subtitle: "Professional curiosity with business framing",
     description:
       "Interes sostenido en blockchain, DeFi y nuevos modelos de infraestructura financiera desde una mirada de negocio, riesgo y adopcion.",
