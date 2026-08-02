@@ -108,9 +108,9 @@ const homePaths = [
 const contactTopics = [
   {
     label: "Networking",
-    description: "Consulting, finance and shared interests.",
+    description: "Venture governance, finance and shared interests.",
     subject: "Networking conversation",
-    body: "Hi Francisco, I would like to connect and talk about consulting, finance and your current path.",
+    body: "Hi Francisco, I would like to connect and talk about Venture Governance, finance and your current path.",
   },
   {
     label: "Recruiting / CV",
@@ -494,15 +494,15 @@ function HomeView({
           onPointerLeave={handleHeroPointerLeave}
         >
           <div className="home-cockpit-main">
-            <p className="eyebrow">FRANCISCO | STRATEGY, FINANCE & VENTURE GOVERNANCE</p>
-            <h1>Francisco</h1>
-            <p className="cockpit-subtitle">
-              Strategy & Consulting Intern in CFO & Enterprise Value at Accenture, building
-              governed systems for clearer, more inspectable decisions.
+            <p className="eyebrow">
+              {profile.name.toUpperCase()} | {profile.title.toUpperCase()} | {profile.company.toUpperCase()}
             </p>
+            <h1>{profile.displayName}</h1>
+            <p className="cockpit-subtitle">{profile.headline}</p>
+            <p className="cockpit-context">{profile.summary}</p>
             <div className="cockpit-actions">
               <button type="button" className="primary-button" onClick={() => handleNavigate("venture")}>
-                Explore Venture
+                Explore Venture Governance
               </button>
               <button type="button" className="secondary-button" onClick={() => handleNavigate("work")}>
                 View work
@@ -526,11 +526,12 @@ function HomeView({
               <span className="cockpit-signal signal-three">CFO</span>
             </div>
             <div className="cockpit-profile-copy">
-              <span className="profile-status">Consulting + founder</span>
-              <h2>Finance, strategy and governed intelligence.</h2>
+              <span className="profile-status">{profile.title}</span>
+              <h2>{profile.company}</h2>
               <div className="profile-meta">
-                <span>Accenture | {profile.team}</span>
-                <span>Venture Governance System</span>
+                <span>Building governed systems</span>
+                <span>{profile.formerRole}</span>
+                <span>{profile.formerTeam}, {profile.formerCompany}</span>
                 <span>{profile.location}</span>
               </div>
             </div>
@@ -761,7 +762,7 @@ function CapabilityCard({ card, index }) {
 }
 
 const capabilityVisualLabels = {
-  accenture: "Strategy in motion",
+  experience: "Experience retained",
   valuation: "Value compounds",
   risk: "Signals under control",
   process: "Process intelligence",
@@ -770,7 +771,7 @@ const capabilityVisualLabels = {
 };
 
 function CapabilityVisual({ type }) {
-  const visualType = capabilityVisualLabels[type] ? type : "accenture";
+  const visualType = capabilityVisualLabels[type] ? type : "experience";
 
   return (
     <div className={`capability-visual capability-visual-${visualType}`} aria-hidden="true">
@@ -780,16 +781,16 @@ function CapabilityVisual({ type }) {
       <span className="capability-particle capability-particle-three" />
 
       <div className="capability-scene">
-        {visualType === "accenture" ? (
+        {visualType === "experience" ? (
           <>
-            <span className="accenture-orbit accenture-orbit-one" />
-            <span className="accenture-orbit accenture-orbit-two" />
-            <div className="accenture-cube">
-              <span className="cube-face cube-front" data-glyph="&gt;" />
-              <span className="cube-face cube-back" data-glyph="EV" />
-              <span className="cube-face cube-right" data-glyph="CFO" />
-              <span className="cube-face cube-left" data-glyph="S" />
-              <span className="cube-face cube-top" data-glyph="+" />
+            <span className="experience-orbit experience-orbit-one" />
+            <span className="experience-orbit experience-orbit-two" />
+            <div className="experience-cube">
+              <span className="cube-face cube-front" data-glyph="EV" />
+              <span className="cube-face cube-back" data-glyph="CFO" />
+              <span className="cube-face cube-right" data-glyph="S&C" />
+              <span className="cube-face cube-left" data-glyph="EXP" />
+              <span className="cube-face cube-top" data-glyph="PAST" />
               <span className="cube-face cube-bottom" />
             </div>
           </>
@@ -858,7 +859,10 @@ function CapabilityVisual({ type }) {
       </div>
 
       <span className="capability-visual-caption" data-label={capabilityVisualLabels[visualType]} />
-      <span className="capability-visual-status" data-label="LIVE SYSTEM" />
+      <span
+        className="capability-visual-status"
+        data-label={visualType === "experience" ? "PAST EXPERIENCE" : "LIVE SYSTEM"}
+      />
     </div>
   );
 }
@@ -960,7 +964,7 @@ function ContactView({ handleMailClick, handleOpenLink, handleDownloadCV, isDown
             <MessageCard
               name="Francisco"
               prompt="nice to meet you. what did you want to talk about?"
-              reply="Happy to talk about consulting, valuation, finance and where I'm headed next."
+              reply="Happy to talk about Venture Governance, finance, agentic systems and what I am building now."
               onEmail={() => handleMailClick(contactTopics[0])}
               avatar="/images/fran-photo-3.jpeg"
             />

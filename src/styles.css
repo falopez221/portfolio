@@ -4057,6 +4057,14 @@ body {
   line-height: 1.55;
 }
 
+.cockpit-context {
+  max-width: 680px;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: clamp(0.86rem, 1.15vw, 1rem);
+  line-height: 1.65;
+}
+
 .cockpit-actions {
   display: flex;
   flex-wrap: wrap;
@@ -8284,11 +8292,11 @@ body {
   color: var(--capability-primary);
 }
 
-.capability-theme-accenture {
-  --capability-rgb: 161, 0, 255;
-  --capability-primary: #8619d8;
-  --capability-secondary: #4d176d;
-  --capability-soft: #f4eaff;
+.capability-theme-experience {
+  --capability-rgb: 45, 91, 151;
+  --capability-primary: #214f88;
+  --capability-secondary: #17375f;
+  --capability-soft: #eaf1f9;
 }
 
 .capability-theme-valuation {
@@ -8490,78 +8498,80 @@ body {
   animation-delay: -3s;
 }
 
-/* Accenture / strategy cube */
-.accenture-cube {
+/* Former experience / strategy cube */
+.experience-cube {
   position: relative;
   width: 82px;
   height: 82px;
   transform-style: preserve-3d;
-  animation: accentureCubeSpin 13s linear infinite;
+  animation: experienceCubeSpin 13s linear infinite;
   will-change: transform;
 }
 
-.accenture-cube .cube-face {
+.experience-cube .cube-face {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.48);
   background:
-    linear-gradient(145deg, rgba(204, 121, 255, 0.88), rgba(112, 0, 190, 0.82));
+    linear-gradient(145deg, rgba(104, 158, 220, 0.9), rgba(29, 73, 126, 0.88));
   color: white;
   font-size: 1.15rem;
   font-weight: 900;
   letter-spacing: -0.04em;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    0 0 28px rgba(161, 0, 255, 0.12);
+    0 0 28px rgba(45, 91, 151, 0.14);
   backface-visibility: hidden;
 }
 
-.accenture-cube .cube-face::after {
+.experience-cube .cube-face::after {
   content: attr(data-glyph);
 }
 
-.accenture-cube .cube-front {
+.experience-cube .cube-front {
   transform: rotateY(0deg) translateZ(41px);
-  font-size: 3.4rem;
+  font-size: 1.55rem;
   line-height: 1;
 }
 
-.accenture-cube .cube-back {
+.experience-cube .cube-back {
   transform: rotateY(180deg) translateZ(41px);
 }
 
-.accenture-cube .cube-right {
+.experience-cube .cube-right {
   transform: rotateY(90deg) translateZ(41px);
-  background: linear-gradient(145deg, rgba(133, 30, 215, 0.9), rgba(70, 0, 118, 0.86));
+  background: linear-gradient(145deg, rgba(56, 111, 174, 0.92), rgba(17, 52, 96, 0.9));
 }
 
-.accenture-cube .cube-left {
+.experience-cube .cube-left {
   transform: rotateY(-90deg) translateZ(41px);
-  background: linear-gradient(145deg, rgba(208, 144, 255, 0.88), rgba(114, 25, 174, 0.84));
+  background: linear-gradient(145deg, rgba(129, 174, 226, 0.9), rgba(47, 91, 144, 0.88));
 }
 
-.accenture-cube .cube-top {
+.experience-cube .cube-top {
   transform: rotateX(90deg) translateZ(41px);
-  background: linear-gradient(145deg, rgba(233, 195, 255, 0.9), rgba(160, 74, 222, 0.84));
+  background: linear-gradient(145deg, rgba(196, 220, 246, 0.92), rgba(86, 135, 190, 0.88));
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
 }
 
-.accenture-cube .cube-bottom {
+.experience-cube .cube-bottom {
   transform: rotateX(-90deg) translateZ(41px);
-  background: linear-gradient(145deg, rgba(78, 0, 126, 0.92), rgba(40, 0, 68, 0.9));
+  background: linear-gradient(145deg, rgba(27, 65, 110, 0.94), rgba(10, 31, 62, 0.92));
 }
 
-.accenture-orbit {
+.experience-orbit {
   position: absolute;
   width: 166px;
   height: 72px;
-  border: 1px solid rgba(161, 0, 255, 0.28);
+  border: 1px solid rgba(45, 91, 151, 0.3);
   border-radius: 50%;
   transform-style: preserve-3d;
 }
 
-.accenture-orbit::after {
+.experience-orbit::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -8569,21 +8579,21 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #a100ff;
+  background: #4d8fd4;
   box-shadow:
-    0 0 16px rgba(161, 0, 255, 0.85),
-    0 0 0 5px rgba(161, 0, 255, 0.1);
+    0 0 16px rgba(77, 143, 212, 0.76),
+    0 0 0 5px rgba(45, 91, 151, 0.1);
 }
 
-.accenture-orbit-one {
-  animation: accentureOrbitOne 7s linear infinite;
+.experience-orbit-one {
+  animation: experienceOrbitOne 7s linear infinite;
 }
 
-.accenture-orbit-two {
+.experience-orbit-two {
   width: 142px;
   height: 142px;
-  border-color: rgba(117, 0, 192, 0.16);
-  animation: accentureOrbitTwo 9s linear infinite reverse;
+  border-color: rgba(45, 91, 151, 0.16);
+  animation: experienceOrbitTwo 9s linear infinite reverse;
 }
 
 /* Valuation / cash-flow object */
@@ -9068,7 +9078,7 @@ body {
   }
 }
 
-@keyframes accentureCubeSpin {
+@keyframes experienceCubeSpin {
   0% {
     transform: rotateX(-18deg) rotateY(28deg) rotateZ(-2deg);
   }
@@ -9080,7 +9090,7 @@ body {
   }
 }
 
-@keyframes accentureOrbitOne {
+@keyframes experienceOrbitOne {
   from {
     transform: rotateX(68deg) rotateZ(0deg);
   }
@@ -9089,7 +9099,7 @@ body {
   }
 }
 
-@keyframes accentureOrbitTwo {
+@keyframes experienceOrbitTwo {
   from {
     transform: rotateY(68deg) rotateZ(0deg);
   }
@@ -9435,8 +9445,8 @@ body {
   .capability-visual-glow,
   .capability-visual-status::before,
   .capability-particle,
-  .accenture-cube,
-  .accenture-orbit,
+  .experience-cube,
+  .experience-orbit,
   .valuation-object,
   .coin-stack span,
   .valuation-arrow,
@@ -10751,6 +10761,10 @@ body {
 
 .cockpit-subtitle {
   transform: translateZ(62px);
+}
+
+.cockpit-context {
+  transform: translateZ(54px);
 }
 
 .cockpit-actions {

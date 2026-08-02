@@ -1,27 +1,35 @@
 export const heroLines = [
-  "Strategy, finance and execution working together.",
-  "Structured thinking turned into decision-ready output.",
-  "Building a consulting foundation in CFO & Enterprise Value at Accenture.",
+  "Building Venture Governance full-time.",
+  "Governed systems for opportunities, uncertainty and enterprise value.",
+  "Former CFO & Enterprise Value experience at Accenture.",
   "Less noise. Better thinking.",
 ];
 
 export const profile = {
-  name: "Francisco",
-  title: "Strategy & Consulting Intern",
-  team: "CFO & Enterprise Value",
-  company: "Accenture",
+  name: "Francisco Ariel Lopez",
+  displayName: "Francisco",
+  title: "Founder, full-time",
+  team: "Venture Governance",
+  company: "Venture Governance",
+  headline:
+    "Building governed systems for exploring opportunities, uncertainty and enterprise value.",
+  summary:
+    "Former Strategy & Consulting Intern in CFO & Enterprise Value at Accenture, now building Venture Governance full-time at the intersection of finance, strategy, agentic systems and human decision authority.",
+  formerRole: "Former Strategy & Consulting Intern",
+  formerTeam: "CFO & Enterprise Value",
+  formerCompany: "Accenture",
   location: "Buenos Aires, Argentina",
   email: "franciscoariellopez22@gmail.com",
   linkedin: "https://linkedin.com/in/francisco-ariel-lopez",
   venture: "https://venturegovernance.com/",
-  availability: "Open to networking conversations and selected opportunities.",
+  availability: "Building Venture Governance full-time and open to thoughtful conversations.",
   calendly: "mailto:franciscoariellopez22@gmail.com",
 };
 
 export const quickFacts = [
-  "Consulting",
+  "Venture Governance",
   "Finance",
-  "Enterprise Value",
+  "Agentic Systems",
   "Buenos Aires",
 ];
 
@@ -272,12 +280,12 @@ export const workflowApps = [
 
 export const experienceCards = [
   {
-    eyebrow: "CURRENT ROLE",
-    title: "Accenture | CFO & Enterprise Value",
-    visual: "accenture",
-    subtitle: "Strategy & Consulting Intern",
+    eyebrow: "FORMER EXPERIENCE",
+    title: "Former Strategy & Consulting Intern",
+    visual: "experience",
+    subtitle: "CFO & Enterprise Value, Accenture",
     description:
-      "Analisis, research y recomendaciones estructuradas en finanzas y estrategia, con foco en claridad, rigor y materiales listos para conversacion ejecutiva.",
+      "Experiencia previa en analisis, research y recomendaciones estructuradas en finanzas y estrategia, con foco en claridad, rigor y materiales para conversacion ejecutiva.",
     tags: ["Strategy", "Finance", "Enterprise Value"],
     details: [
       "Structure ambiguous business questions into decision paths.",
@@ -419,7 +427,7 @@ export const calendarCard = {
       type: "meeting",
       title: "Networking call",
       time: "10:00 AM - 10:30 AM",
-      detail: "Consulting, finance and career conversations",
+      detail: "Venture governance, finance and strategy conversations",
       badge: "30m",
     },
     {
@@ -467,7 +475,7 @@ export const contactCards = [
   {
     title: "LinkedIn",
     eyebrow: "PROFILE",
-    text: "Stay connected around consulting, finance and future opportunities.",
+    text: "Stay connected around venture governance, finance and governed intelligence.",
     href: "https://linkedin.com/in/francisco-ariel-lopez",
     label: "View profile",
     type: "linkedin",

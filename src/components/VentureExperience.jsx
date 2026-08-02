@@ -277,7 +277,7 @@ function VentureExperience({ onOpenLink }) {
         transition={{ duration: shouldReduceMotion ? 0 : 0.7, ease: premiumEase }}
       >
         <div>
-          <p className="eyebrow">FOUNDER | VENTURE GOVERNANCE SYSTEM</p>
+          <p className="eyebrow">FOUNDER, FULL-TIME | VENTURE GOVERNANCE SYSTEM</p>
           <h1>
             Connecting fields.
             <span> Clarifying decisions.</span>
